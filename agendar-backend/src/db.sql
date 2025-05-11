@@ -3,8 +3,8 @@ CREATE DATABASE agendar;
 USE agendar;
 
 CREATE TABLE pacientes (
-    paciente_id		INT AUTO_INCREMENT PRIMARY KEY,
-    id_externo 		VARCHAR(100),
+    paciente_id INT AUTO_INCREMENT PRIMARY KEY,
+    id_externo 		VARCHAR(100) UNIQUE,
     nombre 			VARCHAR(100) NOT NULL,
     apellido 		VARCHAR(100) NOT NULL,
     nro_obra_social	VARCHAR(50),
@@ -18,7 +18,7 @@ CREATE TABLE especialidades (
 
 CREATE TABLE medicos (
     medico_id		INT AUTO_INCREMENT PRIMARY KEY,
-    id_externo 		VARCHAR(100),
+    id_externo 		VARCHAR(100) UNIQUE,
     nombre 			VARCHAR(100) NOT NULL,
     apellido 		VARCHAR(100) NOT NULL,
     matricula 		VARCHAR(50) NOT NULL

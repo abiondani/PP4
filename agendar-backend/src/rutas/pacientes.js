@@ -6,11 +6,11 @@ import {
   putPaciente,
 } from "../controladores/pacienteControlador.js";
 
-const router = express.Router();
+const pacientesRouter = express.Router();
 
-router.get("/:id", getPaciente);
-router.post("/", postPaciente);
-router.delete("/:id_externo", deletePaciente);
-router.put("/:id_externo", putPaciente);
+pacientesRouter.get("/:id", getPaciente);
+pacientesRouter.post("/", postPaciente);
+pacientesRouter.delete("/:id_externo", deletePaciente);
+pacientesRouter.put("/:id_externo", putPaciente);
 
-export default router;
+export default pacientesRouter;

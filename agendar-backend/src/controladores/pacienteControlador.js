@@ -22,6 +22,7 @@ export async function postPaciente(req, res) {
         const nuevoId = await crearPaciente(req.body);
         res.status(201).json({ mensaje: "Paciente creado", id: nuevoId });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Error al crear paciente" });
     }
 }
