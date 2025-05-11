@@ -1,8 +1,9 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import fs from "fs";
 
 dotenv.config();
-
+const script = fs.readFileSync("./src/db.sql", "utf8");
 let pool;
 
 async function crearBaseDeDatosSiNoExiste() {
@@ -13,11 +14,10 @@ async function crearBaseDeDatosSiNoExiste() {
             port: process.env.DB_PORT,
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD || "",
+            multipleStatements: true,
         });
 
-        await conexionTemporal.query(
-            `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`
-        );
+        await conexionTemporal.query(script);
         console.log(
             `Base de datos '${process.env.DB_NAME}' verificada/creada.`
         );
