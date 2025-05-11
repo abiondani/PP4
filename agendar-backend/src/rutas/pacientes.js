@@ -1,9 +1,9 @@
 import express from "express";
 import {
-    getPaciente,
-    postPaciente,
-    deletePaciente,
-    putPaciente,
+  getPaciente,
+  postPaciente,
+  deletePaciente,
+  putPaciente,
 } from "../controladores/pacienteControlador.js";
 
 const router = express.Router();

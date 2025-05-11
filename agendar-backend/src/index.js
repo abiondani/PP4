@@ -11,5 +11,5 @@ app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
 
 app.listen(puerto, () => {
-    console.log(`Servidor escuchando en http://localhost:${puerto}`);
+  console.log(`Servidor escuchando en http://localhost:${puerto}`);
 });
