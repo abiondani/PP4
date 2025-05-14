@@ -59,3 +59,60 @@ CREATE TABLE turnos (
     FOREIGN KEY (estado_id) REFERENCES estados(estado_id)
 );
 
+DELIMITER //
+
+CREATE PROCEDURE generar_turnos(
+    IN anio INT,
+    IN mes INT,
+    IN medico_id_in INT,
+    IN dias VARCHAR(255),
+    IN hora_inicio TIME,
+    IN hora_fin TIME,
+    IN duracion_minutos INT,
+    IN consultorio_id INT
+)
+BEGIN
+    DECLARE fecha DATE;
+    DECLARE nombre_dia VARCHAR(20);
+    DECLARE hora_actual TIME;
+    DECLARE especialidad_id_in INT;
+   
+   
+    SELECT especialidad_id INTO especialidad_id_in
+    FROM medicos_especialidades
+    WHERE medico_id = medico_id_in
+    LIMIT 1;
+
+    SET fecha = STR_TO_DATE(CONCAT(anio, '-', mes, '-01'), '%Y-%m-%d');
+
+    WHILE MONTH(fecha) = mes DO
+        SET nombre_dia = CASE DAYOFWEEK(fecha)
+            WHEN 1 THEN 'Domingo'
+            WHEN 2 THEN 'Lunes'
+            WHEN 3 THEN 'Martes'
+            WHEN 4 THEN 'Miercoles'
+            WHEN 5 THEN 'Jueves'
+            WHEN 6 THEN 'Viernes'
+            WHEN 7 THEN 'Sabado'
+        END;
+
+        IF FIND_IN_SET(nombre_dia, dias) > 0 THEN
+           
+            SET hora_actual = hora_inicio;
+            WHILE hora_actual < hora_fin DO
+                INSERT INTO turnos (paciente_id, medico_id, especialidad_id, fecha, duracion, consultorio_id, estado_id, fecha_estado)
+                VALUES (NULL, medico_id_in, especialidad_id_in, CONCAT(fecha, ' ', hora_actual), duracion_minutos, consultorio_id, 'L', NOW());
+            
+                SET hora_actual = ADDTIME(hora_actual, SEC_TO_TIME(duracion_minutos * 60));
+            END WHILE;
+
+        END IF;
+       
+        SET fecha = DATE_ADD(fecha, INTERVAL 1 DAY);
+    END WHILE;
+    
+    SELECT 'success' AS mensaje;
+
+END //
+
+DELIMITER ;
