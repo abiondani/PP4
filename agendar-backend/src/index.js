@@ -14,8 +14,9 @@ app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
 app.use("/api/medicos", medicosRouter);
 app.use("/administradores", administradoresRouter);
+// prueba
 
 crearBaseDeDatosSiNoExiste();
 app.listen(puerto, () => {
-  console.log(`Servidor escuchando en http://localhost:${puerto}`);
+    console.log(`Servidor escuchando en http://localhost:${puerto}`);
 });
