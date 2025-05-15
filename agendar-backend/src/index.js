@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import pacientesRouter from "./rutas/pacientes.js";
 import medicosRouter from "./rutas/medicos.js";
+import administradoresRouter from "./rutas/administrador.js";
+import turnosRouter from "./rutas/turnos.js";
 import { crearBaseDeDatosSiNoExiste } from "./db.js";
 
 dotenv.config();
@@ -12,6 +14,8 @@ const puerto = process.env.PORT || 3000;
 app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
 app.use("/api/medicos", medicosRouter);
+app.use("/administradores", administradoresRouter);
+app.use("/api/turnos", turnosRouter);
 
 crearBaseDeDatosSiNoExiste();
 app.listen(puerto, () => {

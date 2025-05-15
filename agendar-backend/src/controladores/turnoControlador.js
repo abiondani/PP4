@@ -10,11 +10,9 @@ export async function getTurnosPorMedico(req, res) {
       req.params.medico_id
     );
     if (turnos.length === 0) {
-      return res
-        .status(404)
-        .json({
-          mensaje: "El médico seleccionado no posee turnos disponibles.",
-        });
+      return res.status(404).json({
+        mensaje: "El médico seleccionado no posee turnos disponibles.",
+      });
     }
     res.json(turnos);
   } catch (error) {

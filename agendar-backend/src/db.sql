@@ -118,8 +118,8 @@ END;
 
 INSERT INTO especialidades (descripcion) VALUES ('Especialiad de prueba');
 INSERT INTO consultorios (descripcion) VALUES ('consultorio de prueba');
-INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre');
+INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre'),('R', 'Reservado'),('A', 'Atendido');
 INSERT INTO medicos (id_externo, nombre, apellido, matricula) VALUES ('pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula');
-
+INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social) VALUES ('pruebaIdExternoPaciente', 'pruebaNombrePAciente', 'pruebaApellidoPaciente', '6025552255');
 INSERT into medicos_especialidades (medico_id, especialidad_id) VALUES (1,1);
 CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);

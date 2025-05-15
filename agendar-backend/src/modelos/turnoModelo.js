@@ -30,7 +30,7 @@ export async function cancelarTurno(turno_id, paciente_id) {
   );
   if (resultado.affectedRows === 0) {
     throw new Error(
-      "No se puede cancelar el turno (no es tuyo o ya fue atendido)"
+      "No se puede cancelar el turno (no  es tuyo o ya fue atendido)"
     );
   }
 }
