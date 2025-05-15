@@ -14,7 +14,6 @@ app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
 app.use("/api/medicos", medicosRouter);
 app.use("/administradores", administradoresRouter);
-// prueba
 
 crearBaseDeDatosSiNoExiste();
 app.listen(puerto, () => {
