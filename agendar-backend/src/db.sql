@@ -59,7 +59,8 @@ CREATE TABLE turnos (
     FOREIGN KEY (estado_id) REFERENCES estados(estado_id)
 );
 
-DELIMITER //
+DROP PROCEDURE IF EXISTS generar_turnos;
+
 
 CREATE PROCEDURE generar_turnos(
     IN anio INT,
@@ -113,6 +114,12 @@ BEGIN
     
     SELECT 'success' AS mensaje;
 
-END //
+END;
 
-DELIMITER ;
+INSERT INTO especialidades (descripcion) VALUES ('Especialiad de prueba');
+INSERT INTO consultorios (descripcion) VALUES ('consultorio de prueba');
+INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre');
+INSERT INTO medicos (id_externo, nombre, apellido, matricula) VALUES ('pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula');
+
+INSERT into medicos_especialidades (medico_id, especialidad_id) VALUES (1,1);
+CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);
