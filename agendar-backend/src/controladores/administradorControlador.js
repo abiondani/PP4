@@ -6,8 +6,11 @@ export async function postTurnos(req, res) {
     if (!turnos) {
       return res.status(404).json({ mensaje: "Turnos no creados" });
     }
-    res.json(medico);
+    res.json(turnos);
   } catch (error) {
-    res.status(500).json({ error: "Error al crear los turnos" });
+    console.error("Error en postTurnos:", error);
+    res
+      .status(500)
+      .json({ error: "Error al crear los turnos", detalles: error.message });
   }
 }

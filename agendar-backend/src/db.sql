@@ -58,6 +58,18 @@ CREATE TABLE IF NOT EXISTS turnos (
     FOREIGN KEY (estado_id) REFERENCES estados(estado_id)
 );
 
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    contrasena VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    rol VARCHAR(50) DEFAULT 'usuario',
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE PROCEDURE IF NOT EXISTS generar_turnos(
     IN anio INT,
     IN mes INT,
@@ -112,10 +124,59 @@ BEGIN
 
 END;
 
--- INSERT INTO especialidades (descripcion) VALUES ('Especialiad de prueba');
--- INSERT INTO consultorios (descripcion) VALUES ('consultorio de prueba');
--- INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre'),('R', 'Reservado'),('A', 'Atendido');
--- INSERT INTO medicos (id_externo, nombre, apellido, matricula) VALUES ('pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula');
--- INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social) VALUES ('pruebaIdExternoPaciente', 'pruebaNombrePAciente', 'pruebaApellidoPaciente', '6025552255');
--- INSERT into medicos_especialidades (medico_id, especialidad_id) VALUES (1,1);
+
+-- INSERTS básicos que generen registros en la tabla
+
+INSERT INTO especialidades (descripcion)
+SELECT 'Especialidad de prueba'
+WHERE NOT EXISTS (
+    SELECT 1 FROM especialidades WHERE descripcion = 'Especialidad de prueba'
+);
+
+INSERT INTO consultorios (descripcion)
+SELECT 'consultorio de prueba'
+WHERE NOT EXISTS (
+    SELECT 1 FROM consultorios WHERE descripcion = 'consultorio de prueba'
+);
+
+INSERT INTO estados (estado_id, descripcion)
+SELECT 'L', 'Libre' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'L')
+UNION ALL
+SELECT 'R', 'Reservado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'R')
+UNION ALL
+SELECT 'A', 'Atendido' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'A');
+
+INSERT INTO medicos (id_externo, nombre, apellido, matricula)
+SELECT 'pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula'
+WHERE NOT EXISTS (
+    SELECT 1 FROM medicos WHERE id_externo = 'pruebaIdExterno'
+);
+
+INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social)
+SELECT 'pruebaIdExternoPaciente', 'pruebaNombrePaciente', 'pruebaApellidoPaciente', '6025552255'
+WHERE NOT EXISTS (
+    SELECT 1 FROM pacientes WHERE id_externo = 'pruebaIdExternoPaciente'
+);
+
+INSERT INTO medicos_especialidades (medico_id, especialidad_id)
+SELECT 1, 1
+WHERE NOT EXISTS (
+    SELECT 1 FROM medicos_especialidades WHERE medico_id = 1 AND especialidad_id = 1
+);
+
+INSERT INTO usuarios (usuario, contrasena, nombre, apellido, email, rol)
+SELECT * FROM (
+    SELECT 
+        'admin' AS usuario,
+        'admin123' AS contrasena,
+        'Juan' AS nombre,
+        'Pérez' AS apellido,
+        'admin@example.com' AS email,
+        'admin' AS rol
+) AS tmp
+WHERE NOT EXISTS (
+    SELECT 1 FROM usuarios WHERE usuario = 'admin'
+) LIMIT 1;
+
+
 -- CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);

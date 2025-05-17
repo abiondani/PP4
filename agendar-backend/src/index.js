@@ -7,6 +7,7 @@ import administradoresRouter from "./rutas/administrador.js";
 import turnosRouter from "./rutas/turnos.js";
 import especialidadesRouter from "./rutas/especialidades.js";
 import { crearBaseDeDatosSiNoExiste } from "./db.js";
+import loginRouter from "./rutas/login.js";
 
 dotenv.config();
 
@@ -19,8 +20,9 @@ app.use("/api/medicos", medicosRouter);
 app.use("/administradores", administradoresRouter);
 app.use("/api/turnos", turnosRouter);
 app.use("/api/especialidades", especialidadesRouter);
+app.use("/api/login", loginRouter);
 
 crearBaseDeDatosSiNoExiste();
 app.listen(puerto, () => {
-    console.log(`Servidor escuchando en http://localhost:${puerto}`);
+  console.log(`Servidor escuchando en http://localhost:${puerto}`);
 });
