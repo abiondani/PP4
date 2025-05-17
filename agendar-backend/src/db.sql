@@ -1,8 +1,7 @@
-DROP DATABASE IF EXISTS agendar;
-CREATE DATABASE agendar;
+CREATE DATABASE IF NOT EXISTS agendar;
 USE agendar;
 
-CREATE TABLE pacientes (
+CREATE TABLE IF NOT EXISTS pacientes (
     paciente_id INT AUTO_INCREMENT PRIMARY KEY,
     id_externo 		VARCHAR(100) UNIQUE,
     nombre 			VARCHAR(100) NOT NULL,
@@ -11,12 +10,12 @@ CREATE TABLE pacientes (
     correo			VARCHAR(100)
 );
 
-CREATE TABLE especialidades (
+CREATE TABLE IF NOT EXISTS especialidades (
     especialidad_id	INT AUTO_INCREMENT PRIMARY KEY,
     descripcion 	VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE medicos (
+CREATE TABLE IF NOT EXISTS medicos (
     medico_id		INT AUTO_INCREMENT PRIMARY KEY,
     id_externo 		VARCHAR(100) UNIQUE,
     nombre 			VARCHAR(100) NOT NULL,
@@ -24,7 +23,7 @@ CREATE TABLE medicos (
     matricula 		VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE medicos_especialidades (
+CREATE TABLE IF NOT EXISTS medicos_especialidades (
     medico_id 		INT,
     especialidad_id INT,
     PRIMARY KEY (medico_id, especialidad_id),
@@ -32,17 +31,17 @@ CREATE TABLE medicos_especialidades (
     FOREIGN KEY (especialidad_id) REFERENCES especialidades(especialidad_id)
 );
 
-CREATE TABLE consultorios (
+CREATE TABLE IF NOT EXISTS consultorios (
     consultorio_id	INT AUTO_INCREMENT PRIMARY KEY,
     descripcion		VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE estados (
+CREATE TABLE IF NOT EXISTS estados (
     estado_id		CHAR(1) PRIMARY KEY,		 		
     descripcion 	VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE turnos (
+CREATE TABLE IF NOT EXISTS turnos (
     turno_id		INT AUTO_INCREMENT PRIMARY KEY,
     paciente_id		INT,
     medico_id 		INT NOT NULL,
@@ -59,10 +58,7 @@ CREATE TABLE turnos (
     FOREIGN KEY (estado_id) REFERENCES estados(estado_id)
 );
 
-DROP PROCEDURE IF EXISTS generar_turnos;
-
-
-CREATE PROCEDURE generar_turnos(
+CREATE PROCEDURE IF NOT EXISTS generar_turnos(
     IN anio INT,
     IN mes INT,
     IN medico_id_in INT,
@@ -116,10 +112,10 @@ BEGIN
 
 END;
 
-INSERT INTO especialidades (descripcion) VALUES ('Especialiad de prueba');
-INSERT INTO consultorios (descripcion) VALUES ('consultorio de prueba');
-INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre'),('R', 'Reservado'),('A', 'Atendido');
-INSERT INTO medicos (id_externo, nombre, apellido, matricula) VALUES ('pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula');
-INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social) VALUES ('pruebaIdExternoPaciente', 'pruebaNombrePAciente', 'pruebaApellidoPaciente', '6025552255');
-INSERT into medicos_especialidades (medico_id, especialidad_id) VALUES (1,1);
-CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);
+-- INSERT INTO especialidades (descripcion) VALUES ('Especialiad de prueba');
+-- INSERT INTO consultorios (descripcion) VALUES ('consultorio de prueba');
+-- INSERT INTO estados (estado_id, descripcion) VALUES ('L', 'Libre'),('R', 'Reservado'),('A', 'Atendido');
+-- INSERT INTO medicos (id_externo, nombre, apellido, matricula) VALUES ('pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula');
+-- INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social) VALUES ('pruebaIdExternoPaciente', 'pruebaNombrePAciente', 'pruebaApellidoPaciente', '6025552255');
+-- INSERT into medicos_especialidades (medico_id, especialidad_id) VALUES (1,1);
+-- CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);

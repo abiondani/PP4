@@ -1,15 +1,20 @@
 import express from "express";
 import {
-  getTurnosPorMedico,
-  putReservarTurno,
-  putCancelarTurno,
+    getTurnosPorMedico,
+    getTurnosPorEspecialidad,
+    putReservarTurno,
+    putCancelarTurno,
 } from "../controladores/turnoControlador.js";
 
-const router = express.Router();
+const turnosRouter = express.Router();
 
-router.get("/disponibles/:medico_id", getTurnosPorMedico);
-router.put("/reservar", putReservarTurno);
-router.put("/cancelar", putCancelarTurno);
+turnosRouter.get("/disponibles/:medico_id", getTurnosPorMedico);
+turnosRouter.get(
+    "/disponiblesPorEspecialidad/:especialidad_id",
+    getTurnosPorEspecialidad
+);
+turnosRouter.put("/reservar", putReservarTurno);
+turnosRouter.put("/cancelar", putCancelarTurno);
 
-export default router;
+export default turnosRouter;
 //
