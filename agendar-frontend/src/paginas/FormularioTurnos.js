@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/FormularioTurno.css";
 
 function FormularioTurno() {
+  const [toastMsg, setToastMsg] = useState("");
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -22,66 +26,85 @@ function FormularioTurno() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Error en la petición");
+
       const json = await res.json();
-      alert(json.mensaje || "Turnos generados");
+
+      if (!res.ok) throw new Error(json.mensaje || "Error al generar turnos");
+
+      setToastMsg("✅ Turnos generados correctamente");
     } catch (error) {
-      console.error(error);
-      alert("Error al generar turnos");
+      console.error("Error:", error);
+      setToastMsg("❌ Error al generar turnos");
     }
+
+    // Ocultar toast a los 4 segundos
+    setTimeout(() => setToastMsg(""), 4000);
   };
 
   return (
-    <div className="formulario-wrapper">
-      <h2 className="titulo">Generar Turnos</h2>
-      <form className="formulario" onSubmit={handleSubmit}>
-        <div className="form-grupo">
-          <label>Año:</label>
-          <input type="number" name="anio" required />
-        </div>
+    <div className="pantalla">
+      <div className="formulario-wrapper">
+        <h2 className="titulo">Generar Turnos</h2>
+        <form className="formulario" onSubmit={handleSubmit}>
+          <div className="form-grupo">
+            <label>Año:</label>
+            <input type="number" name="anio" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Mes:</label>
-          <input type="number" name="mes" required />
-        </div>
+          <div className="form-grupo">
+            <label>Mes:</label>
+            <input type="number" name="mes" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Médico ID:</label>
-          <input type="number" name="medico_id" required />
-        </div>
+          <div className="form-grupo">
+            <label>Médico ID:</label>
+            <input type="number" name="medico_id" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Días:</label>
-          <input
-            type="text"
-            name="dias"
-            placeholder="Lunes,Martes..."
-            required
-          />
-        </div>
+          <div className="form-grupo">
+            <label>Días:</label>
+            <input
+              type="text"
+              name="dias"
+              placeholder="Lunes,Martes..."
+              required
+            />
+          </div>
 
-        <div className="form-grupo">
-          <label>Hora inicio:</label>
-          <input type="time" name="hora_inicio" required />
-        </div>
+          <div className="form-grupo">
+            <label>Hora inicio:</label>
+            <input type="time" name="hora_inicio" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Hora fin:</label>
-          <input type="time" name="hora_fin" required />
-        </div>
+          <div className="form-grupo">
+            <label>Hora fin:</label>
+            <input type="time" name="hora_fin" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Duración (minutos):</label>
-          <input type="number" name="duracion_minutos" required />
-        </div>
+          <div className="form-grupo">
+            <label>Duración (minutos):</label>
+            <input type="number" name="duracion_minutos" required />
+          </div>
 
-        <div className="form-grupo">
-          <label>Consultorio ID:</label>
-          <input type="number" name="consultorio_id" required />
-        </div>
+          <div className="form-grupo">
+            <label>Consultorio ID:</label>
+            <input type="number" name="consultorio_id" required />
+          </div>
 
-        <button type="submit">Generar</button>
-      </form>
+          <div className="botones">
+            <button type="submit">Generar</button>
+            <button
+              type="button"
+              className="boton-volver"
+              onClick={() => navigate("/")}
+            >
+              Volver a la pantalla principal
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {toastMsg && <div className="toast">{toastMsg}</div>}
     </div>
   );
 }
