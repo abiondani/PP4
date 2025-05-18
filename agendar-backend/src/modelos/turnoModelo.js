@@ -40,7 +40,7 @@ export async function reservarTurno(turno_id, paciente_id) {
     const [resultado] = await pool.query(
         `UPDATE turnos 
      SET paciente_id = ?, estado_id = 'R', fecha_estado = NOW()
-     WHERE turno_id = ? AND estado_id = 'L'`,
+     WHERE turno_id = ? AND estado_id = 'B'`,
         [paciente_id, turno_id]
     );
     if (resultado.affectedRows === 0) {
