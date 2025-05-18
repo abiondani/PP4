@@ -1,0 +1,41 @@
+.contenedor-turnos {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+.tabla-turnos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.tabla-turnos th,
+.tabla-turnos td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.tabla-turnos th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.tabla-turnos tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.btn-volver {
+  padding: 10px 20px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-volver:hover {
+  background-color: #1259a8;
+}
