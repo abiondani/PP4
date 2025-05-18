@@ -3,6 +3,8 @@ import {
     getTurnosPorMedico,
     getTurnosPorEspecialidad,
     putReservarTurno,
+    putBloquearTurno,
+    putLiberarTurno,
     putCancelarTurno,
 } from "../controladores/turnoControlador.js";
 
@@ -14,6 +16,8 @@ turnosRouter.get(
     getTurnosPorEspecialidad
 );
 turnosRouter.put("/reservar", putReservarTurno);
+turnosRouter.put("/bloquear", putBloquearTurno);
+turnosRouter.put("/liberar", putLiberarTurno);
 turnosRouter.put("/cancelar", putCancelarTurno);
 
 export default turnosRouter;

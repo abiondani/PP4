@@ -144,7 +144,9 @@ SELECT 'L', 'Libre' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'L
 UNION ALL
 SELECT 'R', 'Reservado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'R')
 UNION ALL
-SELECT 'A', 'Atendido' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'A');
+SELECT 'A', 'Atendido' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'A')
+UNION ALL
+SELECT 'B', 'Bloqueado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'B');
 
 INSERT INTO medicos (id_externo, nombre, apellido, matricula)
 SELECT 'pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula'
