@@ -124,6 +124,19 @@ BEGIN
 
 END;
 
+-- SP para eliminar un turno
+CREATE PROCEDURE IF NOT EXISTS eliminar_turno (
+    IN turno_id_in INT
+)
+BEGIN
+    IF EXISTS (SELECT 1 FROM turnos WHERE turno_id = turno_id_in) THEN
+        DELETE FROM turnos WHERE turno_id = turno_id_in;
+        SELECT 'Turno eliminado correctamente.' AS mensaje;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El turno no existe.';
+    END IF;
+END;
 
 -- INSERTS básicos que generen registros en la tabla
 
@@ -179,6 +192,5 @@ SELECT * FROM (
 WHERE NOT EXISTS (
     SELECT 1 FROM usuarios WHERE usuario = 'admin'
 ) LIMIT 1;
-
 
 -- CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);
