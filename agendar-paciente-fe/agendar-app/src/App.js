@@ -127,6 +127,7 @@ function App() {
           cargarDisponibles(especialidadSeleccionada);
         }
         cerrarModal();
+        cargarTurnosOcupados();
       })
       .catch((error) => {
         console.error("Error al enviar:", error);
@@ -153,12 +154,7 @@ function App() {
         setLoadingTurnosOcupados(false);
       });
   };
-  // useEffect(
-  //   {
-  //     cargarTurnosOcupados,
-  //   },
-  //   []
-  // );
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Especialidades médicas</h1>
