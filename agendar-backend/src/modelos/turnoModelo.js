@@ -63,7 +63,7 @@ export async function bloquearTurno(turno_id) {
 export async function liberarTurno(turno_id) {
     const [resultado] = await pool.query(
         `UPDATE turnos 
-     SET estado_id = 'B', fecha_estado = NOW()
+     SET estado_id = 'L', fecha_estado = NOW()
      WHERE turno_id = ? AND estado_id = 'B'`,
         [turno_id]
     );
