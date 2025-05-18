@@ -46,7 +46,6 @@ export async function getTurnosOcupadosPorPaciente(req, res) {
 
 export async function getTurnosPorEspecialidad(req, res) {
   try {
-    console.log(">>>>>>>>>>>>>>>" + req.params.especialidad_id);
     const turnos = await obtenerTurnosDisponiblesPorEspecialidad(
       req.params.especialidad_id
     );
@@ -94,9 +93,9 @@ export async function putLiberarTurno(req, res) {
 }
 
 export async function putCancelarTurno(req, res) {
-  const { turno_id, paciente_id } = req.body;
+  const { turno_id } = req.body;
   try {
-    await cancelarTurno(turno_id, paciente_id);
+    await cancelarTurno(turno_id);
     res.json({ mensaje: "Turno cancelado correctamente" });
   } catch (error) {
     res.status(400).json({ error: error.message });

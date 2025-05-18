@@ -1,4 +1,5 @@
 import { crearTurnos } from "../modelos/administradorModelo.js";
+import { listarTurnos } from "../modelos/administradorModelo.js";
 
 export async function postTurnos(req, res) {
   try {
@@ -12,5 +13,15 @@ export async function postTurnos(req, res) {
     res
       .status(500)
       .json({ error: "Error al crear los turnos", detalles: error.message });
+  }
+}
+
+export async function getTurnos(req, res) {
+  try {
+    const turnos = await listarTurnos();
+    res.json(turnos);
+  } catch (error) {
+    console.error("Error al obtener turnos:", error);
+    res.status(500).json({ error: "Error al obtener los turnos" });
   }
 }

@@ -49,7 +49,7 @@ export async function reservarTurno(turno_id, paciente_id) {
   const [resultado] = await pool.query(
     `UPDATE turnos 
      SET paciente_id = ?, estado_id = 'R', fecha_estado = NOW()
-     WHERE turno_id = ? AND estado_id = 'L'`,
+     WHERE turno_id = ? AND estado_id = 'B'`,
     [paciente_id, turno_id]
   );
   if (resultado.affectedRows === 0) {
@@ -81,12 +81,12 @@ export async function liberarTurno(turno_id) {
   }
 }
 
-export async function cancelarTurno(turno_id, paciente_id) {
+export async function cancelarTurno(turno_id) {
   const [resultado] = await pool.query(
     `UPDATE turnos 
      SET paciente_id = NULL, estado_id = 'L', fecha_estado = NOW()
-     WHERE turno_id = ? AND paciente_id = ? AND estado_id = 'R'`,
-    [turno_id, paciente_id]
+     WHERE turno_id = ? AND estado_id = 'R'`,
+    [turno_id]
   );
   if (resultado.affectedRows === 0) {
     throw new Error(
