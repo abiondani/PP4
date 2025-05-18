@@ -1,22 +1,34 @@
 import React, { useState } from "react";
 
-const API_ESPECIALIDADES = "http://localhost:3000/api/especialidades";
-const API_DISPONIBLES =
-  "http://localhost:3000/api/turnos/disponiblesPorEspecialidad";
+// const API_ESPECIALIDADES = "http://localhost:3000/api/especialidades";
+// const API_DISPONIBLES =
+//   "http://localhost:3000/api/turnos/disponiblesPorEspecialidad";
+// const API_BLOQUEARTURNO = "http://localhost:3000/api/turnos/bloquear";
+// const API_LIBERARTURNO = "http://localhost:3000/api/turnos/liberar";
 
 function App() {
+  const apiEspecialidades = process.env.REACT_APP_API_ESPECIALIDADES;
+  const apiDisponibles = process.env.REACT_APP_API_DISPONIBLES_ESPECIALIDAD;
+  const apiBloqueadoTurno = process.env.REACT_APP_API_BLOQUEARTURNO;
+  const apiLiberarTurno = process.env.REACT_APP_API_LIBERARTURNO;
+  const apiReservarTurno = process.env.REACT_APP_API_RESERVAR_TURNO;
+  const apiOcupadosPaciente = process.env.REACT_APP_API_OCUPADOS_PACIENTE;
+
   const [especialidades, setEspecialidades] = useState([]);
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState("");
   const [disponibles, setDisponibles] = useState([]);
   const [loadingEspecialidades, setLoadingEspecialidades] = useState(false);
   const [loadingDisponibles, setLoadingDisponibles] = useState(false);
+  const [loadingTurnosOcupados, setLoadingTurnosOcupados] = useState(false);
+  const [ocupados, setOcupados] = useState([]);
 
   const [turnoAConfirmar, setTurnoAConfirmar] = useState(null);
   const [mostrandoModal, setMostrandoModal] = useState(false);
 
   const obtenerEspecialidades = () => {
     setLoadingEspecialidades(true);
-    fetch(API_ESPECIALIDADES)
+    cargarTurnosOcupados();
+    fetch(apiEspecialidades)
       .then((res) => res.json())
       .then((data) => {
         setEspecialidades(data);
@@ -30,7 +42,7 @@ function App() {
 
   const cargarDisponibles = (id) => {
     setLoadingDisponibles(true);
-    fetch(`${API_DISPONIBLES}/${id}`)
+    fetch(`${apiDisponibles}/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setDisponibles(data);
@@ -53,6 +65,21 @@ function App() {
   };
 
   const abrirModalConfirmacion = (turno) => {
+    const datos = { turno_id: turno.turno_id };
+    fetch(apiBloqueadoTurno, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.error("Error al lockear el turno: ", err);
+      });
     setTurnoAConfirmar(turno);
     setMostrandoModal(true);
   };
@@ -61,14 +88,32 @@ function App() {
     setTurnoAConfirmar(null);
     setMostrandoModal(false);
   };
-
+  const liberarTurno = () => {
+    const datos = {
+      turno_id: turnoAConfirmar.turno_id,
+    };
+    fetch(apiLiberarTurno, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.error("Error al liberar el turno: ", err);
+      });
+  };
   const confirmarReserva = () => {
     const datos = {
       turno_id: turnoAConfirmar.turno_id,
       paciente_id: 1,
     };
 
-    fetch("http://localhost:3000/api/turnos/reservar", {
+    fetch(apiReservarTurno, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -96,6 +141,24 @@ function App() {
       timeStyle: "short",
     });
   };
+  const cargarTurnosOcupados = () => {
+    fetch(`${apiOcupadosPaciente}/1`)
+      .then((res) => res.json())
+      .then((data) => {
+        setOcupados(data);
+        setLoadingTurnosOcupados(false);
+      })
+      .catch((err) => {
+        console.error("Error al obtener disponibles:", err);
+        setLoadingTurnosOcupados(false);
+      });
+  };
+  // useEffect(
+  //   {
+  //     cargarTurnosOcupados,
+  //   },
+  //   []
+  // );
   return (
     <div style={{ padding: "20px" }}>
       <h1>Especialidades médicas</h1>
@@ -160,6 +223,31 @@ function App() {
         </div>
       )}
 
+      {loadingTurnosOcupados && <p>Cargando turnos ocupados...</p>}
+
+      {ocupados.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h2>Turnos ocupados</h2>
+          <table border="1" cellPadding="8" cellSpacing="0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Médico ID</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {ocupados.map((item, index) => (
+                <tr key={index}>
+                  <td>{formatearFechaLocal(item.fecha)}</td>
+                  <td>{item.medico_id}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {mostrandoModal && turnoAConfirmar && (
         <div
           style={{
@@ -197,7 +285,14 @@ function App() {
               >
                 Confirmar
               </button>
-              <button onClick={cerrarModal}>Cancelar</button>
+              <button
+                onClick={() => {
+                  liberarTurno();
+                  cerrarModal();
+                }}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
