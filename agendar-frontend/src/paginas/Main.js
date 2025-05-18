@@ -1,24 +1,25 @@
+// src/Main.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Main({ onLogout }) {
+function Main() {
   const navigate = useNavigate();
-
-  const cerrarSesion = () => {
-    onLogout();
-    navigate("/");
-  };
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Pantalla Principal</h1>
-      <nav>
-        <button onClick={() => navigate("/turnos")}>
-          Ir a Formulario de Turnos
-        </button>
-        <button onClick={cerrarSesion} style={{ marginLeft: 10 }}>
-          Cerrar Sesión
-        </button>
+      <h1>Gestión de Turnos</h1>
+      <nav
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          marginTop: "20px",
+        }}
+      >
+        <button onClick={() => navigate("/listar")}>Listar Turnos</button>
+        <button onClick={() => navigate("/crear")}>Crear Turno</button>
+        <button onClick={() => navigate("/modificar")}>Modificar Turno</button>
+        <button onClick={() => navigate("/eliminar")}>Eliminar Turno</button>
       </nav>
     </div>
   );

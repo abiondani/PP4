@@ -1,48 +1,22 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import Login from "./paginas/Login";
-import Main from "./paginas/Main";
-import FormularioTurnos from "./paginas/FormularioTurnos";
+// src/App.js
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Main from "./paginas/Main.js";
+import FormularioTurno from "./paginas/FormularioTurnos.js";
+import ListarTurnos from "./paginas/ListarTurnos";
+import ModificarTurno from "./paginas/ModificarTurno";
+import EliminarTurno from "./paginas/EliminarTurno";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-  };
-
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            isLoggedIn ? (
-              <Navigate to="/main" />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          }
-        />
-        <Route
-          path="/main"
-          element={
-            isLoggedIn ? <Main onLogout={handleLogout} /> : <Navigate to="/" />
-          }
-        />
-        <Route
-          path="/turnos"
-          element={isLoggedIn ? <FormularioTurnos /> : <Navigate to="/" />}
-        />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/" element={<Main />} />
+        <Route path="/crear" element={<FormularioTurno />} />
+        <Route path="/listar" element={<ListarTurnos />} />
+        <Route path="/modificar" element={<ModificarTurno />} />
+        <Route path="/eliminar" element={<EliminarTurno />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
