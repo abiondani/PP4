@@ -12,7 +12,8 @@ import loginRouter from "./rutas/login.js";
 dotenv.config();
 
 const app = express();
-const puerto = process.env.PORT || 3000;
+const host = process.env.BE_HOST;
+const puerto = process.env.BE_PORT;
 app.use(cors());
 app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
@@ -24,5 +25,5 @@ app.use("/api/login", loginRouter);
 
 crearBaseDeDatosSiNoExiste();
 app.listen(puerto, () => {
-  console.log(`Servidor escuchando en http://localhost:${puerto}`);
+    console.log(`Servidor escuchando en ${host}:${puerto}`);
 });
