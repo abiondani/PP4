@@ -10,7 +10,6 @@ export async function obtenerTurnosDisponiblesPorMedico(medico_id) {
 }
 
 export async function obtenerTurnosDisponiblesPorEspecialidad(especialidad_id) {
-    console.log(">>>>>>>>>>>>>>>" + especialidad_id);
     const [filas] = await pool.query(
         `SELECT m.*, t.*
   FROM turnos as t
@@ -46,6 +45,30 @@ export async function reservarTurno(turno_id, paciente_id) {
     );
     if (resultado.affectedRows === 0) {
         throw new Error("El turno ya está reservado o no existe");
+    }
+}
+
+export async function bloquearTurno(turno_id) {
+    const [resultado] = await pool.query(
+        `UPDATE turnos 
+     SET estado_id = 'B', fecha_estado = NOW()
+     WHERE turno_id = ? AND estado_id = 'L'`,
+        [turno_id]
+    );
+    if (resultado.affectedRows === 0) {
+        throw new Error("No se pudo bloquear el turno");
+    }
+}
+
+export async function liberarTurno(turno_id) {
+    const [resultado] = await pool.query(
+        `UPDATE turnos 
+     SET estado_id = 'B', fecha_estado = NOW()
+     WHERE turno_id = ? AND estado_id = 'B'`,
+        [turno_id]
+    );
+    if (resultado.affectedRows === 0) {
+        throw new Error("No se pudo liberar el turno");
     }
 }
 
