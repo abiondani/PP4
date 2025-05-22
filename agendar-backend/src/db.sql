@@ -138,6 +138,22 @@ BEGIN
     END IF;
 END;
 
+CREATE PROCEDURE IF NOT EXISTS modificar_turno(
+    IN p_turno_id INT,
+    IN p_fecha DATETIME,
+    IN p_duracion INT,
+    IN p_estado_id CHAR(1)
+)
+BEGIN
+    UPDATE turnos
+    SET
+        fecha = p_fecha,
+        duracion = p_duracion,
+        estado_id = p_estado_id,
+        fecha_estado = NOW()
+    WHERE turno_id = p_turno_id;
+END;
+
 -- INSERTS básicos que generen registros en la tabla
 
 INSERT INTO especialidades (descripcion)
