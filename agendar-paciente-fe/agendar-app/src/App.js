@@ -156,9 +156,14 @@ function App() {
       body: JSON.stringify({ turno_id: turnoAEliminar.turno_id }),
     })
       .then((res) => res.json())
+
       .then(() => {
-        if (especialidadSeleccionada && fechaSeleccionada) {
-          buscarTurnosPorFecha();
+        if (especialidadSeleccionada) {
+          if (fechaSeleccionada) {
+            buscarTurnosPorFecha();
+          } else {
+            cargarDisponibles(especialidadSeleccionada);
+          }
         }
         cargarTurnosOcupados();
       })
