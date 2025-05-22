@@ -6,6 +6,7 @@ import {
   bloquearTurno,
   liberarTurno,
   cancelarTurno,
+  obtenerTurnosDisponiblesPorEspecialidadYFecha,
 } from "../modelos/turnoModelo.js";
 
 export async function getTurnosPorMedico(req, res) {
@@ -54,6 +55,34 @@ export async function getTurnosPorEspecialidad(req, res) {
         mensaje: "La especialidad seleccionada no posee turnos disponibles.",
       });
     }
+    res.json(turnos);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener turnos disponibles: " + error.message,
+    });
+  }
+}
+
+export async function getTurnosPorEspecialidadYFecha(req, res) {
+  const { especialidad_id } = req.params;
+  const { fecha } = req.query;
+
+  if (!fecha) {
+    return res.status(400).json({ error: "Falta el parámetro de fecha." });
+  }
+
+  try {
+    const turnos = await obtenerTurnosDisponiblesPorEspecialidadYFecha(
+      especialidad_id,
+      fecha
+    );
+
+    if (turnos.length === 0) {
+      return res.status(404).json({
+        mensaje: "No hay turnos disponibles para la fecha seleccionada.",
+      });
+    }
+
     res.json(turnos);
   } catch (error) {
     res.status(500).json({

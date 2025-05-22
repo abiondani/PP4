@@ -7,6 +7,7 @@ import {
   putBloquearTurno,
   putLiberarTurno,
   putCancelarTurno,
+  getTurnosPorEspecialidadYFecha,
 } from "../controladores/turnoControlador.js";
 
 const turnosRouter = express.Router();
@@ -21,6 +22,10 @@ turnosRouter.put("/reservar", putReservarTurno);
 turnosRouter.put("/bloquear", putBloquearTurno);
 turnosRouter.put("/liberar", putLiberarTurno);
 turnosRouter.put("/cancelar", putCancelarTurno);
+turnosRouter.get(
+  "/disponiblesPorFecha/:especialidad_id",
+  getTurnosPorEspecialidadYFecha
+);
 
 export default turnosRouter;
 //
