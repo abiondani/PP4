@@ -7,7 +7,6 @@ import {
   bloquearTurno,
   liberarTurno,
   cancelarTurno,
-  obtenerTurnosDisponiblesPorEspecialidadYFecha,
 } from "../modelos/turnoModelo.js";
 
 export async function getTurnosPorMedico(req, res) {

@@ -8,7 +8,6 @@ import {
   putBloquearTurno,
   putLiberarTurno,
   putCancelarTurno,
-  getTurnosPorEspecialidadYFecha,
 } from "../controladores/turnoControlador.js";
 
 const turnosRouter = express.Router();
