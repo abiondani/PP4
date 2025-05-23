@@ -1,6 +1,7 @@
 import {
   obtenerTurnosDisponiblesPorMedico,
   obtenerTurnosDisponiblesPorEspecialidad,
+  obtenerTurnosDisponiblesPorEspecialidadYFecha,
   obtenerTurnosOcupadosPorPaciente,
   reservarTurno,
   bloquearTurno,
@@ -52,6 +53,27 @@ export async function getTurnosPorEspecialidad(req, res) {
     if (turnos.length === 0) {
       return res.status(404).json({
         mensaje: "La especialidad seleccionada no posee turnos disponibles.",
+      });
+    }
+    res.json(turnos);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener turnos disponibles: " + error.message,
+    });
+  }
+}
+
+export async function getTurnosPorEspecialidadYFecha(req, res) {
+  try {
+    const { especialidad_id, fecha } = req.body;
+    const turnos = await obtenerTurnosDisponiblesPorEspecialidadYFecha(
+      especialidad_id,
+      fecha
+    );
+    if (turnos.length === 0) {
+      return res.status(404).json({
+        mensaje:
+          "La especialidad seleccionada no posee turnos disponibles para ese día.",
       });
     }
     res.json(turnos);

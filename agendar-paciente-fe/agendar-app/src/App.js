@@ -13,6 +13,8 @@ function App() {
   const apiLiberarTurno = process.env.REACT_APP_API_LIBERARTURNO;
   const apiReservarTurno = process.env.REACT_APP_API_RESERVAR_TURNO;
   const apiOcupadosPaciente = process.env.REACT_APP_API_OCUPADOS_PACIENTE;
+  const apiCancelarTurno = process.env.REACT_APP_API_CANCELAR_TURNO;
+  const PACIENTE_ID = 1;
 
   const [especialidades, setEspecialidades] = useState([]);
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState("");
@@ -24,6 +26,27 @@ function App() {
 
   const [turnoAConfirmar, setTurnoAConfirmar] = useState(null);
   const [mostrandoModal, setMostrandoModal] = useState(false);
+
+  const [turnoACancelar, setTurnoACancelar] = useState(null);
+  const [mostrandoModalCancelacion, setMostrandoModalCancelacion] =
+    useState(false);
+
+  const [modificandoTurno, setModificandoTurno] = useState(false);
+  const [turnosAModificar, setTurnoAModificar] = useState(null);
+  const [turnosNuevosParaModificacion, setTurnosNuevosParaModificacion] =
+    useState([]);
+  const [turnoNuevoAReservar, setTurnoNuevoAReservar] = useState([]);
+  const [
+    mostrandoModalConfirmarModificacion,
+    setmostrandoModalConfirmarModificacion,
+  ] = useState(false);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [
+    fechaSeleccionadaParaModificacion,
+    setFechaSeleccionadaParaModificacion,
+  ] = useState(new Date().toISOString().split("T")[0]);
 
   const obtenerEspecialidades = () => {
     setLoadingEspecialidades(true);
@@ -39,19 +62,39 @@ function App() {
         setLoadingEspecialidades(false);
       });
   };
+  const recuperarTurnos = async (especialidad_id, fecha) => {
+    const datos = { especialidad_id: especialidad_id, fecha: fecha };
 
-  const cargarDisponibles = (id) => {
-    setLoadingDisponibles(true);
-    fetch(`${apiDisponibles}/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setDisponibles(data);
-        setLoadingDisponibles(false);
+    return await fetch(apiDisponibles, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
+    })
+      .then((res) => {
+        if (res.status === 404) {
+          return [];
+        }
+
+        return res.json();
       })
       .catch((err) => {
         console.error("Error al obtener disponibles:", err);
-        setLoadingDisponibles(false);
+        return [];
       });
+  };
+  const cargarTurnosParaModificacion = async (id, fecha) => {
+    setModificandoTurno(true);
+    const turnos = await recuperarTurnos(id, fecha);
+    console.log(turnos);
+    setTurnosNuevosParaModificacion(turnos);
+  };
+  const cargarDisponibles = async (id, fecha = fechaSeleccionada) => {
+    setLoadingDisponibles(true);
+    const turnos = await recuperarTurnos(id, fecha);
+    setDisponibles(turnos);
+    setLoadingDisponibles(false);
   };
 
   const handleChangeEspecialidad = (e) => {
@@ -64,8 +107,30 @@ function App() {
     }
   };
 
-  const abrirModalConfirmacion = (turno) => {
-    const datos = { turno_id: turno.turno_id };
+  const handleChangeFecha = async (e) => {
+    const fecha = e.target.value;
+    setFechaSeleccionada(fecha);
+    if (fecha && especialidadSeleccionada) {
+      await cargarDisponibles(especialidadSeleccionada, fecha);
+    } else {
+      setDisponibles([]);
+    }
+  };
+
+  const handleChangeFechaModificacion = async (e) => {
+    const fecha = e.target.value;
+    setFechaSeleccionadaParaModificacion(fecha);
+    if (fecha && turnosAModificar.especialidad_id) {
+      await cargarTurnosParaModificacion(
+        turnosAModificar.especialidad_id,
+        fecha
+      );
+    } else {
+      setTurnosNuevosParaModificacion([]);
+    }
+  };
+  const bloquearTurno = (id) => {
+    const datos = { turno_id: id };
     fetch(apiBloqueadoTurno, {
       method: "PUT",
       headers: {
@@ -78,19 +143,35 @@ function App() {
         console.log(data);
       })
       .catch((err) => {
-        console.error("Error al lockear el turno: ", err);
+        console.error("Error al blockear el turno: ", err);
       });
+  };
+  const abrirModalConfirmacion = (turno) => {
+    bloquearTurno(turno.turno_id);
     setTurnoAConfirmar(turno);
     setMostrandoModal(true);
+  };
+  const abrirModalConfirmarCancelacion = (turno) => {
+    setTurnoACancelar(turno);
+    setMostrandoModalCancelacion(true);
   };
 
   const cerrarModal = () => {
     setTurnoAConfirmar(null);
     setMostrandoModal(false);
   };
-  const liberarTurno = () => {
+
+  const cerrarModalModificacion = () => {
+    setTurnoNuevoAReservar(null);
+    setmostrandoModalConfirmarModificacion(false);
+  };
+  const cerrarModalCancelacion = () => {
+    setTurnoACancelar(null);
+    setMostrandoModalCancelacion(false);
+  };
+  const liberarTurno = (id) => {
     const datos = {
-      turno_id: turnoAConfirmar.turno_id,
+      turno_id: id,
     };
     fetch(apiLiberarTurno, {
       method: "PUT",
@@ -107,13 +188,42 @@ function App() {
         console.error("Error al liberar el turno: ", err);
       });
   };
-  const confirmarReserva = () => {
+
+  const reservarTurno = async (turno) => {
+    await fetch(apiReservarTurno, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(turno),
+    })
+      .then((res) => res.json())
+      .then((respuesta) => {
+        console.log("Respuesta del backend:", respuesta);
+      })
+      .catch((error) => {
+        console.error("Error al enviar:", error);
+      });
+  };
+  const confirmarReserva = async () => {
     const datos = {
       turno_id: turnoAConfirmar.turno_id,
-      paciente_id: 1,
+      paciente_id: PACIENTE_ID,
     };
+    await reservarTurno(datos);
 
-    fetch(apiReservarTurno, {
+    if (especialidadSeleccionada) {
+      cargarDisponibles(especialidadSeleccionada);
+    }
+    cerrarModal();
+    cargarTurnosOcupados();
+  };
+
+  const cancelarTurno = async (id) => {
+    const datos = {
+      turno_id: id,
+    };
+    await fetch(apiCancelarTurno, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -123,16 +233,18 @@ function App() {
       .then((res) => res.json())
       .then((respuesta) => {
         console.log("Respuesta del backend:", respuesta);
-        if (especialidadSeleccionada) {
-          cargarDisponibles(especialidadSeleccionada);
-        }
-        cerrarModal();
-        cargarTurnosOcupados();
       })
       .catch((error) => {
         console.error("Error al enviar:", error);
-        cerrarModal();
       });
+  };
+  const cancelarReserva = async () => {
+    await cancelarTurno(turnoACancelar.turno_id);
+    if (especialidadSeleccionada) {
+      cargarDisponibles(especialidadSeleccionada);
+    }
+    cerrarModalCancelacion();
+    cargarTurnosOcupados();
   };
 
   const formatearFechaLocal = (fechaISO) => {
@@ -153,6 +265,32 @@ function App() {
         console.error("Error al obtener disponibles:", err);
         setLoadingTurnosOcupados(false);
       });
+  };
+
+  const abrirModalConfirmarModificacion = (turno) => {
+    bloquearTurno(turno.turno_id);
+    setmostrandoModalConfirmarModificacion(true);
+    setTurnoNuevoAReservar(turno);
+  };
+
+  const confirmarModificacion = async () => {
+    await cancelarTurno(turnosAModificar.turno_id);
+
+    const datos = {
+      turno_id: turnoNuevoAReservar.turno_id,
+      paciente_id: PACIENTE_ID,
+    };
+    await reservarTurno(datos);
+
+    if (especialidadSeleccionada) {
+      cargarDisponibles(especialidadSeleccionada);
+    }
+    setModificandoTurno(false);
+    cerrarModalModificacion();
+    cargarTurnosOcupados();
+    setTurnoAModificar(null);
+    setTurnosNuevosParaModificacion([]);
+    setTurnoNuevoAReservar(null);
   };
 
   return (
@@ -178,11 +316,25 @@ function App() {
               </option>
             ))}
           </select>
+          <div style={{ marginTop: "10px" }}>
+            <label>Fecha:</label>
+            <input
+              type="date"
+              value={fechaSeleccionada}
+              min={new Date().toISOString().split("T")[0]}
+              onChange={handleChangeFecha}
+              style={{ marginLeft: "10px", padding: "5px" }}
+            />
+          </div>
         </div>
       )}
 
       {loadingDisponibles && <p>Cargando turnos disponibles...</p>}
-
+      {especialidadSeleccionada &&
+        !loadingDisponibles &&
+        disponibles.length === 0 && (
+          <p>No hay turnos disponibles en esa fecha</p>
+        )}
       {disponibles.length > 0 && (
         <div style={{ marginTop: "20px" }}>
           <h2>Turnos disponibles</h2>
@@ -237,6 +389,85 @@ function App() {
                 <tr key={index}>
                   <td>{formatearFechaLocal(item.fecha)}</td>
                   <td>{item.medico_id}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setTurnoAModificar(item);
+                        const fecha = new Date(item.fecha)
+                          .toISOString()
+                          .split("T")[0];
+                        setFechaSeleccionadaParaModificacion(fecha);
+                        cargarTurnosParaModificacion(
+                          item.especialidad_id,
+                          fecha
+                        );
+                      }}
+                    >
+                      Modificar
+                    </button>
+                    <button
+                      onClick={() =>
+                        abrirModalConfirmarCancelacion({
+                          turno_id: item.turno_id,
+                          fecha: formatearFechaLocal(item.fecha),
+                          medico_id: item.medico_id,
+                        })
+                      }
+                    >
+                      Cancelar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {modificandoTurno && turnosNuevosParaModificacion.length >= 0 && (
+        <div style={{ marginTop: "10px" }}>
+          <label>Fecha:</label>
+          <input
+            type="date"
+            value={fechaSeleccionadaParaModificacion}
+            onChange={handleChangeFechaModificacion}
+            min={new Date().toISOString().split("T")[0]}
+            style={{ marginLeft: "10px", padding: "5px" }}
+          />
+        </div>
+      )}
+      {modificandoTurno && turnosNuevosParaModificacion.length === 0 && (
+        <p>No hay turnos disponibles en esa fecha</p>
+      )}
+      {modificandoTurno && turnosNuevosParaModificacion.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h2>Turnos disponibles</h2>
+          <table border="1" cellPadding="8" cellSpacing="0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Médico ID</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {turnosNuevosParaModificacion.map((item, index) => (
+                <tr key={index}>
+                  <td>{formatearFechaLocal(item.fecha)}</td>
+                  <td>{item.medico_id}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        abrirModalConfirmarModificacion({
+                          turno_id: item.turno_id,
+                          fecha: formatearFechaLocal(item.fecha),
+                          medico_id: item.medico_id,
+                        })
+                      }
+                    >
+                      Reservar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -283,7 +514,7 @@ function App() {
               </button>
               <button
                 onClick={() => {
-                  liberarTurno();
+                  liberarTurno(turnoAConfirmar.turno_id);
                   cerrarModal();
                 }}
               >
@@ -293,6 +524,95 @@ function App() {
           </div>
         </div>
       )}
+
+      {mostrandoModalCancelacion && turnoACancelar && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              textAlign: "center",
+              minWidth: "300px",
+            }}
+          >
+            <h3>¿Cancelar reserva?</h3>
+            <p>
+              <strong>Fecha:</strong> {turnoACancelar.fecha}
+              <br />
+              <strong>Médico ID:</strong> {turnoACancelar.medico_id}
+            </p>
+            <div style={{ marginTop: "20px" }}>
+              <button onClick={cancelarReserva} style={{ marginRight: "10px" }}>
+                Sí
+              </button>
+              <button onClick={cerrarModalCancelacion}>No</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrandoModalConfirmarModificacion &&
+        turnosAModificar &&
+        turnoNuevoAReservar && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "white",
+                padding: "20px",
+                borderRadius: "8px",
+                textAlign: "center",
+                minWidth: "300px",
+              }}
+            >
+              <h3>¿Confirmar modificacion?</h3>
+              <p>
+                <strong>Fecha vieja:</strong> {turnosAModificar.fecha}
+                <br />
+                <strong>Médico ID:</strong> {turnosAModificar.medico_id}
+                <br />
+                <strong>Fecha nueva:</strong> {turnoNuevoAReservar.fecha}
+              </p>
+              <div style={{ marginTop: "20px" }}>
+                <button onClick={confirmarModificacion}>Aceptar</button>
+                <button
+                  onClick={() => {
+                    liberarTurno(turnoNuevoAReservar.turno_id);
+                    cerrarModalModificacion();
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

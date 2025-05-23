@@ -45,6 +45,29 @@ ORDER
   return filas;
 }
 
+export async function obtenerTurnosDisponiblesPorEspecialidadYFecha(
+  especialidad_id,
+  fecha
+) {
+  const [filas] = await pool.query(
+    `SELECT m.*, t.*
+  FROM turnos as t
+ INNER
+  JOIN medicos as m
+    ON m.medico_id = t.medico_id
+ WHERE t.especialidad_id = ?
+   AND t.estado_id = 'L'
+   AND t.fecha >= NOW()
+   AND DATE(fecha) = ?   
+ORDER
+   BY t.fecha
+	, m.apellido
+`,
+    [especialidad_id, fecha]
+  );
+  return filas;
+}
+
 export async function reservarTurno(turno_id, paciente_id) {
   const [resultado] = await pool.query(
     `UPDATE turnos 
