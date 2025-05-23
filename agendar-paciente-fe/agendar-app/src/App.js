@@ -1,11 +1,5 @@
 import React, { useState } from "react";
 
-// const API_ESPECIALIDADES = "http://localhost:3000/api/especialidades";
-// const API_DISPONIBLES =
-//   "http://localhost:3000/api/turnos/disponiblesPorEspecialidad";
-// const API_BLOQUEARTURNO = "http://localhost:3000/api/turnos/bloquear";
-// const API_LIBERARTURNO = "http://localhost:3000/api/turnos/liberar";
-
 function App() {
   const apiEspecialidades = process.env.REACT_APP_API_ESPECIALIDADES;
   const apiDisponibles = process.env.REACT_APP_API_DISPONIBLES_ESPECIALIDAD;
@@ -48,20 +42,7 @@ function App() {
     setFechaSeleccionadaParaModificacion,
   ] = useState(new Date().toISOString().split("T")[0]);
 
-  const obtenerEspecialidades = () => {
-    setLoadingEspecialidades(true);
-    cargarTurnosOcupados();
-    fetch(apiEspecialidades)
-      .then((res) => res.json())
-      .then((data) => {
-        setEspecialidades(data);
-        setLoadingEspecialidades(false);
-      })
-      .catch((err) => {
-        console.error("Error al obtener especialidades:", err);
-        setLoadingEspecialidades(false);
-      });
-  };
+  /* ------------------------------------------------- Funciones ABM ----------------------------------------- */
   const recuperarTurnos = async (especialidad_id, fecha) => {
     const datos = { especialidad_id: especialidad_id, fecha: fecha };
 
@@ -84,51 +65,7 @@ function App() {
         return [];
       });
   };
-  const cargarTurnosParaModificacion = async (id, fecha) => {
-    setModificandoTurno(true);
-    const turnos = await recuperarTurnos(id, fecha);
-    console.log(turnos);
-    setTurnosNuevosParaModificacion(turnos);
-  };
-  const cargarDisponibles = async (id, fecha = fechaSeleccionada) => {
-    setLoadingDisponibles(true);
-    const turnos = await recuperarTurnos(id, fecha);
-    setDisponibles(turnos);
-    setLoadingDisponibles(false);
-  };
 
-  const handleChangeEspecialidad = (e) => {
-    const id = e.target.value;
-    setEspecialidadSeleccionada(id);
-    if (id) {
-      cargarDisponibles(id);
-    } else {
-      setDisponibles([]);
-    }
-  };
-
-  const handleChangeFecha = async (e) => {
-    const fecha = e.target.value;
-    setFechaSeleccionada(fecha);
-    if (fecha && especialidadSeleccionada) {
-      await cargarDisponibles(especialidadSeleccionada, fecha);
-    } else {
-      setDisponibles([]);
-    }
-  };
-
-  const handleChangeFechaModificacion = async (e) => {
-    const fecha = e.target.value;
-    setFechaSeleccionadaParaModificacion(fecha);
-    if (fecha && turnosAModificar.especialidad_id) {
-      await cargarTurnosParaModificacion(
-        turnosAModificar.especialidad_id,
-        fecha
-      );
-    } else {
-      setTurnosNuevosParaModificacion([]);
-    }
-  };
   const bloquearTurno = (id) => {
     const datos = { turno_id: id };
     fetch(apiBloqueadoTurno, {
@@ -146,29 +83,7 @@ function App() {
         console.error("Error al blockear el turno: ", err);
       });
   };
-  const abrirModalConfirmacion = (turno) => {
-    bloquearTurno(turno.turno_id);
-    setTurnoAConfirmar(turno);
-    setMostrandoModal(true);
-  };
-  const abrirModalConfirmarCancelacion = (turno) => {
-    setTurnoACancelar(turno);
-    setMostrandoModalCancelacion(true);
-  };
 
-  const cerrarModal = () => {
-    setTurnoAConfirmar(null);
-    setMostrandoModal(false);
-  };
-
-  const cerrarModalModificacion = () => {
-    setTurnoNuevoAReservar(null);
-    setmostrandoModalConfirmarModificacion(false);
-  };
-  const cerrarModalCancelacion = () => {
-    setTurnoACancelar(null);
-    setMostrandoModalCancelacion(false);
-  };
   const liberarTurno = (id) => {
     const datos = {
       turno_id: id,
@@ -205,19 +120,6 @@ function App() {
         console.error("Error al enviar:", error);
       });
   };
-  const confirmarReserva = async () => {
-    const datos = {
-      turno_id: turnoAConfirmar.turno_id,
-      paciente_id: PACIENTE_ID,
-    };
-    await reservarTurno(datos);
-
-    if (especialidadSeleccionada) {
-      cargarDisponibles(especialidadSeleccionada);
-    }
-    cerrarModal();
-    cargarTurnosOcupados();
-  };
 
   const cancelarTurno = async (id) => {
     const datos = {
@@ -238,6 +140,95 @@ function App() {
         console.error("Error al enviar:", error);
       });
   };
+
+  const formatearFechaLocal = (fechaISO) => {
+    const fecha = new Date(fechaISO);
+    return fecha.toLocaleString("es-AR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+  };
+
+  /*-------------------------------------------Carga de turnos para reserva--------------------------------------------------------------*/
+
+  const obtenerEspecialidades = () => {
+    setLoadingEspecialidades(true);
+    cargarTurnosOcupados();
+    fetch(apiEspecialidades)
+      .then((res) => res.json())
+      .then((data) => {
+        setEspecialidades(data);
+        setLoadingEspecialidades(false);
+      })
+      .catch((err) => {
+        console.error("Error al obtener especialidades:", err);
+        setLoadingEspecialidades(false);
+      });
+  };
+
+  const cargarDisponibles = async (id, fecha = fechaSeleccionada) => {
+    setLoadingDisponibles(true);
+    const turnos = await recuperarTurnos(id, fecha);
+    setDisponibles(turnos);
+    setLoadingDisponibles(false);
+  };
+
+  const handleChangeEspecialidad = (e) => {
+    const id = e.target.value;
+    setEspecialidadSeleccionada(id);
+    if (id) {
+      cargarDisponibles(id);
+    } else {
+      setDisponibles([]);
+    }
+  };
+
+  const handleChangeFecha = async (e) => {
+    const fecha = e.target.value;
+    setFechaSeleccionada(fecha);
+    if (fecha && especialidadSeleccionada) {
+      await cargarDisponibles(especialidadSeleccionada, fecha);
+    } else {
+      setDisponibles([]);
+    }
+  };
+
+  /*----------------------------------------------Reserva de turno-----------------------------------------------------------*/
+
+  const abrirModalConfirmacion = (turno) => {
+    bloquearTurno(turno.turno_id);
+    setTurnoAConfirmar(turno);
+    setMostrandoModal(true);
+  };
+
+  const cargarTurnosParaModificacion = async (id, fecha) => {
+    setModificandoTurno(true);
+    const turnos = await recuperarTurnos(id, fecha);
+    console.log(turnos);
+    setTurnosNuevosParaModificacion(turnos);
+  };
+
+  const cerrarModal = () => {
+    setTurnoAConfirmar(null);
+    setMostrandoModal(false);
+  };
+
+  const confirmarReserva = async () => {
+    const datos = {
+      turno_id: turnoAConfirmar.turno_id,
+      paciente_id: PACIENTE_ID,
+    };
+    await reservarTurno(datos);
+
+    if (especialidadSeleccionada) {
+      cargarDisponibles(especialidadSeleccionada);
+    }
+    cerrarModal();
+    cargarTurnosOcupados();
+  };
+
+  /*------------------------------------------------Cancelacion de turno----------------------------------------------*/
+
   const cancelarReserva = async () => {
     await cancelarTurno(turnoACancelar.turno_id);
     if (especialidadSeleccionada) {
@@ -247,30 +238,27 @@ function App() {
     cargarTurnosOcupados();
   };
 
-  const formatearFechaLocal = (fechaISO) => {
-    const fecha = new Date(fechaISO);
-    return fecha.toLocaleString("es-AR", {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
+  const abrirModalConfirmarCancelacion = (turno) => {
+    setTurnoACancelar(turno);
+    setMostrandoModalCancelacion(true);
   };
-  const cargarTurnosOcupados = () => {
-    fetch(`${apiOcupadosPaciente}/1`)
-      .then((res) => res.json())
-      .then((data) => {
-        setOcupados(data);
-        setLoadingTurnosOcupados(false);
-      })
-      .catch((err) => {
-        console.error("Error al obtener disponibles:", err);
-        setLoadingTurnosOcupados(false);
-      });
+
+  const cerrarModalCancelacion = () => {
+    setTurnoACancelar(null);
+    setMostrandoModalCancelacion(false);
   };
+
+  /*-------------------------------------------------Modificacion de turno----------------------------------------*/
 
   const abrirModalConfirmarModificacion = (turno) => {
     bloquearTurno(turno.turno_id);
     setmostrandoModalConfirmarModificacion(true);
     setTurnoNuevoAReservar(turno);
+  };
+
+  const cerrarModalModificacion = () => {
+    setTurnoNuevoAReservar(null);
+    setmostrandoModalConfirmarModificacion(false);
   };
 
   const confirmarModificacion = async () => {
@@ -292,6 +280,36 @@ function App() {
     setTurnosNuevosParaModificacion([]);
     setTurnoNuevoAReservar(null);
   };
+
+  const handleChangeFechaModificacion = async (e) => {
+    const fecha = e.target.value;
+    setFechaSeleccionadaParaModificacion(fecha);
+    if (fecha && turnosAModificar.especialidad_id) {
+      await cargarTurnosParaModificacion(
+        turnosAModificar.especialidad_id,
+        fecha
+      );
+    } else {
+      setTurnosNuevosParaModificacion([]);
+    }
+  };
+
+  /*-------------------------------------------Carga de turnos ocupados--------------------------------------------------------------*/
+
+  const cargarTurnosOcupados = () => {
+    fetch(`${apiOcupadosPaciente}/1`)
+      .then((res) => res.json())
+      .then((data) => {
+        setOcupados(data);
+        setLoadingTurnosOcupados(false);
+      })
+      .catch((err) => {
+        console.error("Error al obtener disponibles:", err);
+        setLoadingTurnosOcupados(false);
+      });
+  };
+
+  /* --------------------------------------------------Visual----------------------------------------------------------- */
 
   return (
     <div style={{ padding: "20px" }}>
@@ -593,7 +611,8 @@ function App() {
             >
               <h3>¿Confirmar modificacion?</h3>
               <p>
-                <strong>Fecha vieja:</strong> {turnosAModificar.fecha}
+                <strong>Fecha vieja:</strong>{" "}
+                {formatearFechaLocal(turnosAModificar.fecha)}
                 <br />
                 <strong>Médico ID:</strong> {turnosAModificar.medico_id}
                 <br />
