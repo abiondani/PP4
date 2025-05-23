@@ -103,6 +103,19 @@ export async function liberarTurno(turno_id) {
     throw new Error("No se pudo liberar el turno");
   }
 }
+/*
+
+export async function liberarTurno(turno_id) {
+  const [resultado] = await pool.query(
+    `UPDATE turnos 
+     SET paciente_id = NULL, estado_id = 'L', fecha_estado = NOW()
+     WHERE turno_id = ? AND estado_id IN ('B', 'R')`,
+    [turno_id]
+  );
+  if (resultado.affectedRows === 0) {
+    throw new Error("No se pudo liberar el turno");
+  }
+}*/
 
 export async function cancelarTurno(turno_id) {
   const [resultado] = await pool.query(

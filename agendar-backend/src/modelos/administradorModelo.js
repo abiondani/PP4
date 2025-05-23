@@ -37,3 +37,21 @@ export async function listarTurnos() {
   `);
   return resultado;
 }
+
+export async function eliminarTurnoPorId(turnoId) {
+  const [resultado] = await pool.query("CALL eliminar_turno(?)", [turnoId]);
+  return resultado;
+}
+
+export async function modificarTurno(turnoId, datos) {
+  const { fecha, duracion, estado_id } = datos;
+
+  const [resultado] = await pool.query("CALL modificar_turno(?, ?, ?, ?)", [
+    turnoId,
+    fecha,
+    duracion,
+    estado_id,
+  ]);
+
+  return resultado;
+}

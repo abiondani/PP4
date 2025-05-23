@@ -1,0 +1,39 @@
+.contenedor-modificar {
+  padding: 20px;
+  font-family: Arial;
+}
+
+.tabla-modificar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.tabla-modificar th,
+.tabla-modificar td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.btn-modificar {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.toast-modificar {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 15px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.toast-modificar button {
+  margin: 5px;
+}
