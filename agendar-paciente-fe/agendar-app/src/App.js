@@ -9,6 +9,7 @@ function App() {
   const apiOcupadosPaciente = process.env.REACT_APP_API_OCUPADOS_PACIENTE;
   const apiCancelarTurno = process.env.REACT_APP_API_CANCELAR_TURNO;
   const PACIENTE_ID = 1;
+  const PACIENTE_NOMBRE = "José María Campos";
 
   const [especialidades, setEspecialidades] = useState([]);
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState("");
@@ -41,6 +42,20 @@ function App() {
     fechaSeleccionadaParaModificacion,
     setFechaSeleccionadaParaModificacion,
   ] = useState(new Date().toISOString().split("T")[0]);
+
+  const [vista, setVista] = useState(null); // null = bienvenida, "reserva" o "ocupados"
+
+  const headerIconUrl = process.env.REACT_APP_ICONO_URL || "";
+  const headerTitle = process.env.REACT_APP_TITULO || "Turnos Médicos";
+  const userName = PACIENTE_NOMBRE;
+
+  /* ------------------------- Funciones para manejar el menú ---------------------------------------- */
+
+  const mostrarReserva = () => setVista("reserva");
+  const mostrarOcupados = () => setVista("ocupados");
+  const salir = () => {
+    setVista(null);
+  };
 
   /* ------------------------------------------------- Funciones ABM ----------------------------------------- */
   const recuperarTurnos = async (especialidad_id, fecha) => {
@@ -153,7 +168,7 @@ function App() {
 
   const obtenerEspecialidades = () => {
     setLoadingEspecialidades(true);
-    cargarTurnosOcupados();
+
     fetch(apiEspecialidades)
       .then((res) => res.json())
       .then((data) => {
@@ -312,280 +327,296 @@ function App() {
   /* --------------------------------------------------Visual----------------------------------------------------------- */
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Especialidades médicas</h1>
-
-      <button onClick={obtenerEspecialidades}>Cargar especialidades</button>
-
-      {loadingEspecialidades && <p>Cargando especialidades...</p>}
-
-      {especialidades.length > 0 && (
-        <div style={{ marginTop: "20px" }}>
-          <label>Seleccionar especialidad:</label>
-          <select
-            value={especialidadSeleccionada}
-            onChange={handleChangeEspecialidad}
-            style={{ marginLeft: "10px", padding: "5px" }}
-          >
-            <option value="">Seleccione una</option>
-            {especialidades.map((esp) => (
-              <option key={esp.especialidad_id} value={esp.especialidad_id}>
-                {esp.descripcion}
-              </option>
-            ))}
-          </select>
-          <div style={{ marginTop: "10px" }}>
-            <label>Fecha:</label>
-            <input
-              type="date"
-              value={fechaSeleccionada}
-              min={new Date().toISOString().split("T")[0]}
-              onChange={handleChangeFecha}
-              style={{ marginLeft: "10px", padding: "5px" }}
-            />
-          </div>
-        </div>
-      )}
-
-      {loadingDisponibles && <p>Cargando turnos disponibles...</p>}
-      {especialidadSeleccionada &&
-        !loadingDisponibles &&
-        disponibles.length === 0 && (
-          <p>No hay turnos disponibles en esa fecha</p>
-        )}
-      {disponibles.length > 0 && (
-        <div style={{ marginTop: "20px" }}>
-          <h2>Turnos disponibles</h2>
-          <table border="1" cellPadding="8" cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Médico ID</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {disponibles.map((item, index) => (
-                <tr key={index}>
-                  <td>{formatearFechaLocal(item.fecha)}</td>
-                  <td>{item.medico_id}</td>
-                  <td>
-                    <button
-                      onClick={() =>
-                        abrirModalConfirmacion({
-                          turno_id: item.turno_id,
-                          fecha: formatearFechaLocal(item.fecha),
-                          medico_id: item.medico_id,
-                        })
-                      }
-                    >
-                      Reservar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {loadingTurnosOcupados && <p>Cargando turnos ocupados...</p>}
-
-      {ocupados.length > 0 && (
-        <div style={{ marginTop: "20px" }}>
-          <h2>Turnos ocupados</h2>
-          <table border="1" cellPadding="8" cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Médico ID</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {ocupados.map((item, index) => (
-                <tr key={index}>
-                  <td>{formatearFechaLocal(item.fecha)}</td>
-                  <td>{item.medico_id}</td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        setTurnoAModificar(item);
-                        const fecha = new Date(item.fecha)
-                          .toISOString()
-                          .split("T")[0];
-                        setFechaSeleccionadaParaModificacion(fecha);
-                        cargarTurnosParaModificacion(
-                          item.especialidad_id,
-                          fecha
-                        );
-                      }}
-                    >
-                      Modificar
-                    </button>
-                    <button
-                      onClick={() =>
-                        abrirModalConfirmarCancelacion({
-                          turno_id: item.turno_id,
-                          fecha: formatearFechaLocal(item.fecha),
-                          medico_id: item.medico_id,
-                        })
-                      }
-                    >
-                      Cancelar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {modificandoTurno && turnosNuevosParaModificacion.length >= 0 && (
-        <div style={{ marginTop: "10px" }}>
-          <label>Fecha:</label>
-          <input
-            type="date"
-            value={fechaSeleccionadaParaModificacion}
-            onChange={handleChangeFechaModificacion}
-            min={new Date().toISOString().split("T")[0]}
-            style={{ marginLeft: "10px", padding: "5px" }}
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      {/* ----------------------------------------- Header --------------------------------------------*/}
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "10px 20px",
+          backgroundColor: "#007bff",
+          color: "white",
+          gap: "10px",
+        }}
+      >
+        {headerIconUrl && (
+          <img
+            src={headerIconUrl}
+            alt="Icono"
+            style={{ height: 40, width: 110, objectFit: "contain" }}
           />
-        </div>
-      )}
-      {modificandoTurno && turnosNuevosParaModificacion.length === 0 && (
-        <p>No hay turnos disponibles en esa fecha</p>
-      )}
-      {modificandoTurno && turnosNuevosParaModificacion.length > 0 && (
-        <div style={{ marginTop: "20px" }}>
-          <h2>Turnos disponibles</h2>
-          <table border="1" cellPadding="8" cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Médico ID</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {turnosNuevosParaModificacion.map((item, index) => (
-                <tr key={index}>
-                  <td>{formatearFechaLocal(item.fecha)}</td>
-                  <td>{item.medico_id}</td>
-                  <td>
-                    <button
-                      onClick={() =>
-                        abrirModalConfirmarModificacion({
-                          turno_id: item.turno_id,
-                          fecha: formatearFechaLocal(item.fecha),
-                          medico_id: item.medico_id,
-                        })
-                      }
-                    >
-                      Reservar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        )}
+        <h1 style={{ margin: 0, fontSize: "1.5rem" }}>{headerTitle}</h1>
+      </header>
 
-      {mostrandoModal && turnoAConfirmar && (
-        <div
+      {/* -------------------------------------------------------------- Body ------------------------------------------------------ */}
+      <div style={{ display: "flex", flexGrow: 1 }}>
+        {/* ---------------------------------------- Menú lateral --------------------------------------------------------- */}
+        <nav
           style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            width: 200,
+            borderRight: "1px solid #ddd",
+            padding: "20px",
+            backgroundColor: "#f8f9fa",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
+            flexDirection: "column",
+            gap: "10px",
           }}
         >
-          <div
+          <button
+            onClick={() => {
+              mostrarReserva();
+              obtenerEspecialidades();
+            }}
             style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "300px",
+              padding: "10px",
+              cursor: "pointer",
+              backgroundColor: vista === "reserva" ? "#007bff" : "transparent",
+              color: vista === "reserva" ? "white" : "black",
+              border: "none",
+              borderRadius: 4,
+              textAlign: "left",
             }}
           >
-            <h3>¿Confirmar reserva?</h3>
-            <p>
-              <strong>Fecha:</strong> {turnoAConfirmar.fecha}
-              <br />
-              <strong>Médico ID:</strong> {turnoAConfirmar.medico_id}
-            </p>
-            <div style={{ marginTop: "20px" }}>
-              <button
-                onClick={confirmarReserva}
-                style={{ marginRight: "10px" }}
-              >
-                Confirmar
-              </button>
-              <button
-                onClick={() => {
-                  liberarTurno(turnoAConfirmar.turno_id);
-                  cerrarModal();
-                }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {mostrandoModalCancelacion && turnoACancelar && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
+            Reservar nuevo turno
+          </button>
+          <button
+            onClick={() => {
+              cargarTurnosOcupados();
+              mostrarOcupados();
+            }}
             style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "300px",
+              padding: "10px",
+              cursor: "pointer",
+              backgroundColor: vista === "ocupados" ? "#007bff" : "transparent",
+              color: vista === "ocupados" ? "white" : "black",
+              border: "none",
+              borderRadius: 4,
+              textAlign: "left",
             }}
           >
-            <h3>¿Cancelar reserva?</h3>
-            <p>
-              <strong>Fecha:</strong> {turnoACancelar.fecha}
-              <br />
-              <strong>Médico ID:</strong> {turnoACancelar.medico_id}
-            </p>
-            <div style={{ marginTop: "20px" }}>
-              <button onClick={cancelarReserva} style={{ marginRight: "10px" }}>
-                Sí
-              </button>
-              <button onClick={cerrarModalCancelacion}>No</button>
-            </div>
-          </div>
-        </div>
-      )}
+            Ver turnos ocupados
+          </button>
+          <button
+            onClick={salir}
+            style={{
+              padding: "10px",
+              cursor: "pointer",
+              backgroundColor: "transparent",
+              color: "black",
+              border: "none",
+              borderRadius: 4,
+              textAlign: "left",
+              marginTop: "auto",
+            }}
+          >
+            Salir
+          </button>
+        </nav>
 
-      {mostrandoModalConfirmarModificacion &&
-        turnosAModificar &&
-        turnoNuevoAReservar && (
+        {/* -------------------------------------- Contenido principal ----------------------------------------- */}
+        <main style={{ flexGrow: 1, padding: 20 }}>
+          {vista === null && (
+            <div>
+              <h2>Bienvenido, {userName}!</h2>
+              <p>Seleccione una opción del menú para comenzar.</p>
+            </div>
+          )}
+
+          {vista === "reserva" && (
+            <div>
+              <h1>Especialidades médicas</h1>
+
+              {loadingEspecialidades && <p>Cargando especialidades...</p>}
+
+              {especialidades.length > 0 && (
+                <div style={{ marginTop: "20px" }}>
+                  <label>Seleccionar especialidad:</label>
+                  <select
+                    value={especialidadSeleccionada}
+                    onChange={handleChangeEspecialidad}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  >
+                    <option value="">Seleccione una</option>
+                    {especialidades.map((esp) => (
+                      <option
+                        key={esp.especialidad_id}
+                        value={esp.especialidad_id}
+                      >
+                        {esp.descripcion}
+                      </option>
+                    ))}
+                  </select>
+                  <div style={{ marginTop: "10px" }}>
+                    <label>Fecha:</label>
+                    <input
+                      type="date"
+                      value={fechaSeleccionada}
+                      min={new Date().toISOString().split("T")[0]}
+                      onChange={handleChangeFecha}
+                      style={{ marginLeft: "10px", padding: "5px" }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {loadingDisponibles && <p>Cargando turnos disponibles...</p>}
+              {especialidadSeleccionada &&
+                !loadingDisponibles &&
+                disponibles.length === 0 && (
+                  <p>No hay turnos disponibles en esa fecha</p>
+                )}
+              {disponibles.length > 0 && (
+                <div style={{ marginTop: "20px" }}>
+                  <h2>Turnos disponibles</h2>
+                  <table border="1" cellPadding="8" cellSpacing="0">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Médico ID</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {disponibles.map((item, index) => (
+                        <tr key={index}>
+                          <td>{formatearFechaLocal(item.fecha)}</td>
+                          <td>{item.medico_id}</td>
+                          <td>
+                            <button
+                              onClick={() =>
+                                abrirModalConfirmacion({
+                                  turno_id: item.turno_id,
+                                  fecha: formatearFechaLocal(item.fecha),
+                                  medico_id: item.medico_id,
+                                })
+                              }
+                            >
+                              Reservar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {vista === "ocupados" && (
+            <div>
+              {loadingTurnosOcupados && <p>Cargando turnos ocupados...</p>}
+
+              {ocupados.length > 0 && (
+                <div style={{ marginTop: "20px" }}>
+                  <h2>Turnos ocupados</h2>
+                  <table border="1" cellPadding="8" cellSpacing="0">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Médico ID</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ocupados.map((item, index) => (
+                        <tr key={index}>
+                          <td>{formatearFechaLocal(item.fecha)}</td>
+                          <td>{item.medico_id}</td>
+                          <td>
+                            <button
+                              onClick={() => {
+                                setTurnoAModificar(item);
+                                const fecha = new Date(item.fecha)
+                                  .toISOString()
+                                  .split("T")[0];
+                                setFechaSeleccionadaParaModificacion(fecha);
+                                cargarTurnosParaModificacion(
+                                  item.especialidad_id,
+                                  fecha
+                                );
+                              }}
+                            >
+                              Modificar
+                            </button>
+                            <button
+                              onClick={() =>
+                                abrirModalConfirmarCancelacion({
+                                  turno_id: item.turno_id,
+                                  fecha: formatearFechaLocal(item.fecha),
+                                  medico_id: item.medico_id,
+                                })
+                              }
+                            >
+                              Cancelar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {modificandoTurno && turnosNuevosParaModificacion.length >= 0 && (
+                <div style={{ marginTop: "10px" }}>
+                  <label>Fecha:</label>
+                  <input
+                    type="date"
+                    value={fechaSeleccionadaParaModificacion}
+                    onChange={handleChangeFechaModificacion}
+                    min={new Date().toISOString().split("T")[0]}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+              )}
+              {modificandoTurno &&
+                turnosNuevosParaModificacion.length === 0 && (
+                  <p>No hay turnos disponibles en esa fecha</p>
+                )}
+              {modificandoTurno && turnosNuevosParaModificacion.length > 0 && (
+                <div style={{ marginTop: "20px" }}>
+                  <h2>Turnos disponibles</h2>
+                  <table border="1" cellPadding="8" cellSpacing="0">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Médico ID</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {turnosNuevosParaModificacion.map((item, index) => (
+                        <tr key={index}>
+                          <td>{formatearFechaLocal(item.fecha)}</td>
+                          <td>{item.medico_id}</td>
+                          <td>
+                            <button
+                              onClick={() =>
+                                abrirModalConfirmarModificacion({
+                                  turno_id: item.turno_id,
+                                  fecha: formatearFechaLocal(item.fecha),
+                                  medico_id: item.medico_id,
+                                })
+                              }
+                            >
+                              Reservar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+      </div>
+      {/* -------------------------------------------- Modales ------------------------------------------------ */}
+      <div style={{ padding: "20px" }}>
+        {mostrandoModal && turnoAConfirmar && (
           <div
             style={{
               position: "fixed",
@@ -609,21 +640,23 @@ function App() {
                 minWidth: "300px",
               }}
             >
-              <h3>¿Confirmar modificacion?</h3>
+              <h3>¿Confirmar reserva?</h3>
               <p>
-                <strong>Fecha vieja:</strong>{" "}
-                {formatearFechaLocal(turnosAModificar.fecha)}
+                <strong>Fecha:</strong> {turnoAConfirmar.fecha}
                 <br />
-                <strong>Médico ID:</strong> {turnosAModificar.medico_id}
-                <br />
-                <strong>Fecha nueva:</strong> {turnoNuevoAReservar.fecha}
+                <strong>Médico ID:</strong> {turnoAConfirmar.medico_id}
               </p>
               <div style={{ marginTop: "20px" }}>
-                <button onClick={confirmarModificacion}>Aceptar</button>
+                <button
+                  onClick={confirmarReserva}
+                  style={{ marginRight: "10px" }}
+                >
+                  Confirmar
+                </button>
                 <button
                   onClick={() => {
-                    liberarTurno(turnoNuevoAReservar.turno_id);
-                    cerrarModalModificacion();
+                    liberarTurno(turnoAConfirmar.turno_id);
+                    cerrarModal();
                   }}
                 >
                   Cancelar
@@ -632,6 +665,100 @@ function App() {
             </div>
           </div>
         )}
+
+        {mostrandoModalCancelacion && turnoACancelar && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "white",
+                padding: "20px",
+                borderRadius: "8px",
+                textAlign: "center",
+                minWidth: "300px",
+              }}
+            >
+              <h3>¿Cancelar reserva?</h3>
+              <p>
+                <strong>Fecha:</strong> {turnoACancelar.fecha}
+                <br />
+                <strong>Médico ID:</strong> {turnoACancelar.medico_id}
+              </p>
+              <div style={{ marginTop: "20px" }}>
+                <button
+                  onClick={cancelarReserva}
+                  style={{ marginRight: "10px" }}
+                >
+                  Sí
+                </button>
+                <button onClick={cerrarModalCancelacion}>No</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {mostrandoModalConfirmarModificacion &&
+          turnosAModificar &&
+          turnoNuevoAReservar && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "20px",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                  minWidth: "300px",
+                }}
+              >
+                <h3>¿Confirmar modificacion?</h3>
+                <p>
+                  <strong>Fecha vieja:</strong>{" "}
+                  {formatearFechaLocal(turnosAModificar.fecha)}
+                  <br />
+                  <strong>Médico ID:</strong> {turnosAModificar.medico_id}
+                  <br />
+                  <strong>Fecha nueva:</strong> {turnoNuevoAReservar.fecha}
+                </p>
+                <div style={{ marginTop: "20px" }}>
+                  <button onClick={confirmarModificacion}>Aceptar</button>
+                  <button
+                    onClick={() => {
+                      liberarTurno(turnoNuevoAReservar.turno_id);
+                      cerrarModalModificacion();
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+      </div>
     </div>
   );
 }
