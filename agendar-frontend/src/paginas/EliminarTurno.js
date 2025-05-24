@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../css/EliminarTurno.css";
-import { useNavigate } from "react-router-dom";
 
 const EliminarTurnos = () => {
   const [turnos, setTurnos] = useState([]);
@@ -8,7 +7,6 @@ const EliminarTurnos = () => {
   const [error, setError] = useState(null);
   const [mensajeToast, setMensajeToast] = useState("");
   const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
-  const navigate = useNavigate();
 
   const cargarTurnos = () => {
     fetch("http://localhost:3000/administradores/turnos")
@@ -155,9 +153,6 @@ const EliminarTurnos = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn-volver" onClick={() => navigate("/")}>
-        Volver a la Página Principal
-      </button>
     </div>
   );
 };

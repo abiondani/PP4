@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "../css/ModificarTurnos.css";
-import { useNavigate } from "react-router-dom";
 
 const ModificarTurnos = () => {
   const [turnos, setTurnos] = useState([]);
   const [toast, setToast] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3000/administradores/turnos")
@@ -145,10 +143,6 @@ const ModificarTurnos = () => {
           <button onClick={() => confirmarModificar(false)}>No</button>
         </div>
       )}
-
-      <button className="btn-volver" onClick={() => navigate("/")}>
-        Volver
-      </button>
     </div>
   );
 };
