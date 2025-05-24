@@ -1,6 +1,7 @@
-import { pool } from "../db.js";
+const { getPool } = require("../db.js");
 
-export async function obtenerPacientePorId(id) {
+async function obtenerPacientePorId(id) {
+    const pool = getPool();
     const [filas] = await pool.query(
         "SELECT * FROM pacientes WHERE paciente_id = ?",
         [id]
@@ -8,7 +9,8 @@ export async function obtenerPacientePorId(id) {
     return filas[0];
 }
 
-export async function crearPaciente(paciente) {
+async function crearPaciente(paciente) {
+    const pool = getPool();
     const { id_externo, nombre, apellido, nro_obra_social, correo } = paciente;
     const [resultado] = await pool.query(
         `INSERT INTO pacientes 
@@ -19,7 +21,8 @@ export async function crearPaciente(paciente) {
     return resultado.insertId;
 }
 
-export async function eliminarPacientePorIdExterno(idExterno) {
+async function eliminarPacientePorIdExterno(idExterno) {
+    const pool = getPool();
     const [resultado] = await pool.query(
         "DELETE FROM pacientes WHERE id_externo = ?",
         [idExterno]
@@ -27,7 +30,8 @@ export async function eliminarPacientePorIdExterno(idExterno) {
     return resultado.affectedRows;
 }
 
-export async function actualizarPacientePorIdExterno(idExterno, datos) {
+async function actualizarPacientePorIdExterno(idExterno, datos) {
+    const pool = getPool();
     const { nombre, apellido, nro_obra_social, correo } = datos;
     const [resultado] = await pool.query(
         `UPDATE pacientes 
@@ -37,3 +41,10 @@ export async function actualizarPacientePorIdExterno(idExterno, datos) {
     );
     return resultado.affectedRows;
 }
+
+module.exports = {
+    obtenerPacientePorId,
+    crearPaciente,
+    eliminarPacientePorIdExterno,
+    actualizarPacientePorIdExterno,
+};

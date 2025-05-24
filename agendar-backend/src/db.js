@@ -1,6 +1,6 @@
-import mysql from "mysql2/promise";
-import dotenv from "dotenv";
-import fs from "fs";
+const mysql = require("mysql2/promise");
+const dotenv = require("dotenv");
+const fs = require("fs");
 
 dotenv.config();
 const script = fs.readFileSync("./src/db.sql", "utf8");
@@ -43,4 +43,14 @@ async function crearBaseDeDatosSiNoExiste() {
     }
 }
 
-export { crearBaseDeDatosSiNoExiste, pool };
+function getPool() {
+    if (!pool) {
+        throw new Error("El pool no fue inicializado.");
+    }
+    return pool;
+}
+
+module.exports = {
+    crearBaseDeDatosSiNoExiste,
+    getPool,
+};

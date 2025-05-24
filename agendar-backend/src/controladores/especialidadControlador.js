@@ -1,6 +1,6 @@
-import { obtenerEspecialidades } from "../modelos/especialidadModelo.js";
+const { obtenerEspecialidades } = require("../modelos/especialidadModelo.js");
 
-export async function getEspecialidad(req, res) {
+async function getEspecialidad(req, res) {
     try {
         const especialidades = await obtenerEspecialidades();
         if (!especialidades) {
@@ -14,3 +14,7 @@ export async function getEspecialidad(req, res) {
         res.status(500).json({ error: "Error al obtener especialidades" });
     }
 }
+
+module.exports = {
+    getEspecialidad,
+};

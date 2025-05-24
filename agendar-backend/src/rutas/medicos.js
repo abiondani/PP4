@@ -1,10 +1,10 @@
-import express from "express";
-import {
+const express = require("express");
+const {
     getMedico,
     postMedico,
     deleteMedico,
     putMedico,
-} from "../controladores/medicoControlador.js";
+} = require("../controladores/medicoControlador.js");
 
 const medicosRouter = express.Router();
 
@@ -13,4 +13,4 @@ medicosRouter.post("/", postMedico);
 medicosRouter.delete("/:id", deleteMedico);
 medicosRouter.put("/:id", putMedico);
 
-export default medicosRouter;
+module.exports = medicosRouter;

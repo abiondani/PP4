@@ -1,10 +1,10 @@
-import express from "express";
-import {
-  getPaciente,
-  postPaciente,
-  deletePaciente,
-  putPaciente,
-} from "../controladores/pacienteControlador.js";
+const express = require("express");
+const {
+    getPaciente,
+    postPaciente,
+    deletePaciente,
+    putPaciente,
+} = require("../controladores/pacienteControlador.js");
 
 const pacientesRouter = express.Router();
 
@@ -13,4 +13,4 @@ pacientesRouter.post("/", postPaciente);
 pacientesRouter.delete("/:id_externo", deletePaciente);
 pacientesRouter.put("/:id_externo", putPaciente);
 
-export default pacientesRouter;
+module.exports = pacientesRouter;
