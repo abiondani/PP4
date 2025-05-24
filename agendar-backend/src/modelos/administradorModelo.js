@@ -1,25 +1,36 @@
-import { pool } from "../db.js";
+const { getPool } = require("../db.js");
 
-export async function crearTurnos(turno) {
-  const {
-    anio,
-    mes,
-    idMedico,
-    dias,
-    hora_inicio,
-    hora_fin,
-    duracion,
-    idConsultorio,
-  } = turno;
-  const [resultado] = await pool.query(
-    "CALL generar_turnos(?, ?, ?, ?, ?, ?, ?, ?);",
-    [anio, mes, idMedico, dias, hora_inicio, hora_fin, duracion, idConsultorio]
-  );
-  return resultado;
+async function crearTurnos(turno) {
+    const pool = getPool();
+    const {
+        anio,
+        mes,
+        idMedico,
+        dias,
+        hora_inicio,
+        hora_fin,
+        duracion,
+        idConsultorio,
+    } = turno;
+    const [resultado] = await pool.query(
+        "CALL generar_turnos(?, ?, ?, ?, ?, ?, ?, ?);",
+        [
+            anio,
+            mes,
+            idMedico,
+            dias,
+            hora_inicio,
+            hora_fin,
+            duracion,
+            idConsultorio,
+        ]
+    );
+    return resultado;
 }
 
-export async function listarTurnos() {
-  const [resultado] = await pool.query(`
+async function listarTurnos() {
+    const pool = getPool();
+    const [resultado] = await pool.query(`
     SELECT 
       t.turno_id,
       CONCAT(m.nombre, ' ', m.apellido) AS medico,
@@ -35,23 +46,32 @@ export async function listarTurnos() {
     JOIN estados es ON t.estado_id = es.estado_id
     ORDER BY t.fecha ASC
   `);
-  return resultado;
+    return resultado;
 }
 
-export async function eliminarTurnoPorId(turnoId) {
-  const [resultado] = await pool.query("CALL eliminar_turno(?)", [turnoId]);
-  return resultado;
+async function eliminarTurnoPorId(turnoId) {
+    const pool = getPool();
+    const [resultado] = await pool.query("CALL eliminar_turno(?)", [turnoId]);
+    return resultado;
 }
 
-export async function modificarTurno(turnoId, datos) {
-  const { fecha, duracion, estado_id } = datos;
+async function modificarTurno(turnoId, datos) {
+    const pool = getPool();
+    const { fecha, duracion, estado_id } = datos;
 
-  const [resultado] = await pool.query("CALL modificar_turno(?, ?, ?, ?)", [
-    turnoId,
-    fecha,
-    duracion,
-    estado_id,
-  ]);
+    const [resultado] = await pool.query("CALL modificar_turno(?, ?, ?, ?)", [
+        turnoId,
+        fecha,
+        duracion,
+        estado_id,
+    ]);
 
-  return resultado;
+    return resultado;
 }
+
+module.exports = {
+    crearTurnos,
+    listarTurnos,
+    eliminarTurnoPorId,
+    modificarTurno,
+};

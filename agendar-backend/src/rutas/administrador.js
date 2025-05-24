@@ -1,8 +1,8 @@
-import express from "express";
-import { postTurnos } from "../controladores/administradorControlador.js";
-import { getTurnos } from "../controladores/administradorControlador.js";
-import { deleteTurno } from "../controladores/administradorControlador.js";
-import { putTurno } from "../controladores/administradorControlador.js";
+const express = require("express");
+const { postTurnos } = require("../controladores/administradorControlador.js");
+const { getTurnos } = require("../controladores/administradorControlador.js");
+const { deleteTurno } = require("../controladores/administradorControlador.js");
+const { putTurno } = require("../controladores/administradorControlador.js");
 
 const administradoresRouter = express.Router();
 
@@ -11,4 +11,4 @@ administradoresRouter.get("/turnos", getTurnos);
 administradoresRouter.delete("/turnos/:id", deleteTurno);
 administradoresRouter.put("/turnos/:id", putTurno);
 
-export default administradoresRouter;
+module.exports = administradoresRouter;

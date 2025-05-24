@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../css/FormularioTurno.css";
 
 function FormularioTurno() {
   const [toastMsg, setToastMsg] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,13 +91,6 @@ function FormularioTurno() {
 
           <div className="botones">
             <button type="submit">Generar</button>
-            <button
-              type="button"
-              className="boton-volver"
-              onClick={() => navigate("/")}
-            >
-              Volver a la pantalla principal
-            </button>
           </div>
         </form>
       </div>

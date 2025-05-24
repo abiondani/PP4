@@ -1,11 +1,11 @@
-import {
+const {
     obtenerPacientePorId,
     crearPaciente,
     eliminarPacientePorIdExterno,
     actualizarPacientePorIdExterno,
-} from "../modelos/pacienteModelo.js";
+} = require("../modelos/pacienteModelo");
 
-export async function getPaciente(req, res) {
+async function getPaciente(req, res) {
     try {
         const paciente = await obtenerPacientePorId(req.params.id);
         if (!paciente) {
@@ -17,8 +17,9 @@ export async function getPaciente(req, res) {
     }
 }
 
-export async function postPaciente(req, res) {
+async function postPaciente(req, res) {
     try {
+        console.log(req.body);
         const nuevoId = await crearPaciente(req.body);
         res.status(201).json({ mensaje: "Paciente creado", id: nuevoId });
     } catch (error) {
@@ -27,7 +28,7 @@ export async function postPaciente(req, res) {
     }
 }
 
-export async function deletePaciente(req, res) {
+async function deletePaciente(req, res) {
     try {
         const filasAfectadas = await eliminarPacientePorIdExterno(
             req.params.id_externo
@@ -41,7 +42,7 @@ export async function deletePaciente(req, res) {
     }
 }
 
-export async function putPaciente(req, res) {
+async function putPaciente(req, res) {
     try {
         const filasAfectadas = await actualizarPacientePorIdExterno(
             req.params.id_externo,
@@ -55,3 +56,10 @@ export async function putPaciente(req, res) {
         res.status(500).json({ error: "Error al actualizar paciente" });
     }
 }
+
+module.exports = {
+    getPaciente,
+    postPaciente,
+    deletePaciente,
+    putPaciente,
+};

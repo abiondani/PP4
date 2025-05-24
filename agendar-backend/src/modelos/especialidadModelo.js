@@ -1,6 +1,11 @@
-import { pool } from "../db.js";
+const { getPool } = require("../db.js");
 
-export async function obtenerEspecialidades() {
+async function obtenerEspecialidades() {
+    const pool = getPool();
     const [filas] = await pool.query("SELECT * FROM especialidades");
     return filas;
 }
+
+module.exports = {
+    obtenerEspecialidades,
+};

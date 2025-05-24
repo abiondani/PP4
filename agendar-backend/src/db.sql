@@ -209,4 +209,5 @@ WHERE NOT EXISTS (
     SELECT 1 FROM usuarios WHERE usuario = 'admin'
 ) LIMIT 1;
 
--- CALL generar_turnos(2025,5,1,'Miercoles,Jueves', 70000, 100000, 30, 1);
+/* CALL generar_turnos(2025,5,1,'Miercoles,Jueves,Sábado', 70000, 100000, 30, 1);
+*/

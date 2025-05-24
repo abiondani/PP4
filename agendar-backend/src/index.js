@@ -1,13 +1,13 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import pacientesRouter from "./rutas/pacientes.js";
-import medicosRouter from "./rutas/medicos.js";
-import administradoresRouter from "./rutas/administrador.js";
-import turnosRouter from "./rutas/turnos.js";
-import especialidadesRouter from "./rutas/especialidades.js";
-import { crearBaseDeDatosSiNoExiste } from "./db.js";
-import loginRouter from "./rutas/login.js";
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const pacientesRouter = require("./rutas/pacientes.js");
+const medicosRouter = require("./rutas/medicos.js");
+const administradoresRouter = require("./rutas/administrador.js");
+const turnosRouter = require("./rutas/turnos.js");
+const especialidadesRouter = require("./rutas/especialidades.js");
+const { crearBaseDeDatosSiNoExiste } = require("./db.js");
+const loginRouter = require("./rutas/login.js");
 
 dotenv.config();
 
@@ -24,6 +24,10 @@ app.use("/api/especialidades", especialidadesRouter);
 app.use("/api/login", loginRouter);
 
 crearBaseDeDatosSiNoExiste();
-app.listen(puerto, () => {
-    console.log(`Servidor escuchando en ${host}:${puerto}`);
-});
+module.exports = app;
+
+if (process.env.NODE_ENV !== "test") {
+    app.listen(puerto, () => {
+        console.log(`Servidor escuchando en ${host}:${puerto}`);
+    });
+}

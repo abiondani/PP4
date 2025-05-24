@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../css/ListarTurnos.css";
-import { useNavigate } from "react-router-dom";
 
 const ListarTurnos = () => {
   const [turnos, setTurnos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3000/administradores/turnos")
@@ -68,9 +66,6 @@ const ListarTurnos = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn-volver" onClick={() => navigate("/")}>
-        Volver a la Página Principal
-      </button>
     </div>
   );
 };
