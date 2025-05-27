@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/pacientes", pacientesRouter);
 app.use("/api/medicos", medicosRouter);
-app.use("/administradores", administradoresRouter);
+app.use("/api/administradores", administradoresRouter);
 app.use("/api/turnos", turnosRouter);
 app.use("/api/especialidades", especialidadesRouter);
 app.use("/api/login", loginRouter);
