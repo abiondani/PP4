@@ -1,7 +1,12 @@
 const transporter = require("../config/mailConfig");
-const { obtenerTodosLosPacientes } = require("../modelos/pacienteModelo");
+const {
+  obtenerTodosLosPacientes,
+  obtenerPacientePorId,
+} = require("../modelos/pacienteModelo");
+const { obtenerTurnoPorID } = require("../modelos/turnoModelo");
+const { obtenerMedicoPorId } = require("../modelos/medicoModelo");
 
-const enviarMensaje = async (req, res) => {
+const enviarNotificacionMasiva = async (req, res) => {
   const { asuntoMensaje, contenidoMensaje } = req.body;
 
   try {
@@ -34,6 +39,59 @@ const enviarMensaje = async (req, res) => {
   }
 };
 
+const enviarConfirmacion = async (turno_id, paciente_id) => {
+  const mensaje = `
+    <h2>Hola [PACIENTE]!</h2>
+    <p>Este es un correo automático de la clínica [CLINICA]</p>
+    <p style="color:blue;">Usted reservó un turno para el dia [DIA] a las [HORA] con el doctor [DOCTOR].</p>
+  `;
+  const asunto = "Confirmación de turno";
+  await enviarCorreo(turno_id, paciente_id, mensaje, asunto);
+};
+
+const enviarCancelacion = async (turno_id, paciente_id) => {
+  const mensaje = `
+    <h2>Hola [PACIENTE]!</h2>
+    <p>Este es un correo automático de la clínica [CLINICA]</p>
+    <p style="color:blue;">Usted <strong>canceló</strong> su turno para el dia [DIA] a las [HORA] con el doctor [DOCTOR].</p>
+  `;
+  const asunto = "Cancelación de turno";
+  await enviarCorreo(turno_id, paciente_id, mensaje, asunto);
+};
+
+const enviarCorreo = async (turno_id, paciente_id, mensaje, asunto) => {
+  const turno = await obtenerTurnoPorID(turno_id);
+  const paciente = await obtenerPacientePorId(paciente_id);
+  const medico = await obtenerMedicoPorId(turno.medico_id);
+  const dia = new Date(turno.fecha).toLocaleDateString("es-AR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const hora = new Date(turno.fecha).toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const mensajeFinal = mensaje
+    .replace("[DIA]", dia)
+    .replace("[HORA]", hora)
+    .replace("[DOCTOR]", medico.apellido + ", " + medico.nombre)
+    .replace("[CLINICA]", process.env.CLINICA_NOMBRE)
+    .replace("[PACIENTE]", paciente.nombre);
+
+  await transporter.sendMail({
+    from: `"Notificación turno" <${process.env.EMAIL_USER}>`,
+    to: paciente.correo,
+    subject: asunto,
+    html: mensajeFinal,
+  });
+};
+
 module.exports = {
-  enviarMensaje,
+  enviarNotificacionMasiva,
+  enviarConfirmacion,
+  enviarCancelacion,
 };

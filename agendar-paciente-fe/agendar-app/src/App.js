@@ -139,6 +139,7 @@ function App() {
   const cancelarTurno = async (id) => {
     const datos = {
       turno_id: id,
+      paciente_id: PACIENTE_ID,
     };
     await fetch(apiCancelarTurno, {
       method: "PUT",

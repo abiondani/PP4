@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { enviarMensaje } = require("../controladores/emailControlador");
+const {
+  enviarNotificacionMasiva,
+} = require("../controladores/emailControlador");
 
-router.post("/", enviarMensaje);
+router.post("/", enviarNotificacionMasiva);
 
 module.exports = router;
