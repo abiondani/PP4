@@ -8,6 +8,7 @@ const turnosRouter = require("./rutas/turnos.js");
 const especialidadesRouter = require("./rutas/especialidades.js");
 const { crearBaseDeDatosSiNoExiste } = require("./db.js");
 const loginRouter = require("./rutas/login.js");
+const emailRouter = require("./rutas/email");
 
 dotenv.config();
 
@@ -22,12 +23,13 @@ app.use("/api/administradores", administradoresRouter);
 app.use("/api/turnos", turnosRouter);
 app.use("/api/especialidades", especialidadesRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/notificaciones", emailRouter);
 
 crearBaseDeDatosSiNoExiste();
 module.exports = app;
 
 if (process.env.NODE_ENV !== "test") {
-    app.listen(puerto, () => {
-        console.log(`Servidor escuchando en ${host}:${puerto}`);
-    });
+  app.listen(puerto, () => {
+    console.log(`Servidor escuchando en ${host}:${puerto}`);
+  });
 }
