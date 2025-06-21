@@ -15,7 +15,7 @@ async function obtenerTurnosPorFecha() {
   const estado = "R";
   const [filas] = await pool.query(
     `SELECT turno_id, paciente_id FROM turnos    
-     WHERE DATE(fecha) = DATE(now())+3 AND estado_id = ?`,
+     WHERE DATE(fecha) = DATE(now())+1 AND estado_id = ?`,
     [estado]
   );
   return filas;
