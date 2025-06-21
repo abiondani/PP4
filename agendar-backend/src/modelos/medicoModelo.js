@@ -11,7 +11,7 @@ async function obtenerMedicoPorId(id) {
 
 async function crearMedico(medico) {
     const pool = getPool();
-    const { idExterno, nombre, apellido, matricula } = medico;
+    const { idExterno, nombre, apellido, matricula, correo } = medico;
     const [resultado] = await pool.query(
         `INSERT INTO medicos 
      (id_externo, nombre, apellido, matricula) 
@@ -32,7 +32,7 @@ async function eliminarMedicoPorIdExterno(idExterno) {
 
 async function actualizarMedicoPorIdExterno(idExterno, datos) {
     const pool = getPool();
-    const { nombre, apellido, matricula } = datos;
+    const { nombre, apellido, matricula, correo } = datos;
     const [resultado] = await pool.query(
         `UPDATE medicos 
      SET nombre = ?, apellido = ?, matricula = ? 
