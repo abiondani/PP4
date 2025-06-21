@@ -9,6 +9,8 @@ const especialidadesRouter = require("./rutas/especialidades.js");
 const { crearBaseDeDatosSiNoExiste } = require("./db.js");
 const loginRouter = require("./rutas/login.js");
 const emailRouter = require("./rutas/email");
+const encuestasRouter = require("./rutas/encuestas.js");
+const metricasRouter = require("./rutas/metricas.js");
 require("./cron/recordatorios.js");
 
 dotenv.config();
@@ -25,6 +27,8 @@ app.use("/api/turnos", turnosRouter);
 app.use("/api/especialidades", especialidadesRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/notificaciones", emailRouter);
+app.use("/api/encuestas", encuestasRouter);
+app.use("/api/metricas", metricasRouter);
 
 crearBaseDeDatosSiNoExiste();
 module.exports = app;
