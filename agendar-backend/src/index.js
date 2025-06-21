@@ -9,6 +9,7 @@ const especialidadesRouter = require("./rutas/especialidades.js");
 const { crearBaseDeDatosSiNoExiste } = require("./db.js");
 const loginRouter = require("./rutas/login.js");
 const emailRouter = require("./rutas/email");
+require("./cron/recordatorios.js");
 
 dotenv.config();
 

@@ -59,6 +59,16 @@ const enviarCancelacion = async (turno_id, paciente_id) => {
   await enviarCorreo(turno_id, paciente_id, mensaje, asunto);
 };
 
+const enviarRecordatorio = async (turno_id, paciente_id) => {
+  const mensaje = `
+    <h2>Hola [PACIENTE]!</h2>
+    <p>Este es un recordatorio automático de la clínica [CLINICA]</p>
+    <p style="color:blue;">Usted tiene un turno reservado para mañana, [DIA] a las [HORA] con el doctor [DOCTOR].</p>
+  `;
+  const asunto = "Confirmación de turno";
+  await enviarCorreo(turno_id, paciente_id, mensaje, asunto);
+};
+
 const enviarCorreo = async (turno_id, paciente_id, mensaje, asunto) => {
   const turno = await obtenerTurnoPorID(turno_id);
   const paciente = await obtenerPacientePorId(paciente_id);
@@ -94,4 +104,5 @@ module.exports = {
   enviarNotificacionMasiva,
   enviarConfirmacion,
   enviarCancelacion,
+  enviarRecordatorio,
 };
