@@ -6,7 +6,6 @@ import PanelMedico from "./PanelMedico";
 function LoginForm() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [loggedInUserRol, setLoggedInUserRol] = useState(null);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -38,8 +37,7 @@ function LoginForm() {
         }
       );
 
-      setLoggedInUser(loginResponse.data.id);
-      setLoggedInUserRol(loginResponse.data.rol_id);
+      setLoggedInUser(loginResponse.data.username);
     } catch (err) {
       setError("Login fallido. Verifique las credenciales.");
     }
@@ -50,12 +48,8 @@ function LoginForm() {
     setForm({ username: "", password: "" });
   };
 
-  if (loggedInUser) {
-    if (loggedInUserRol === "3")
-      return <Main id_externo={loggedInUser} onLogout={handleLogout} />;
-    if (loggedInUserRol === "1")
-      return <PanelMedico id_externo={loggedInUser} />;
-  }
+  if (loggedInUser)
+    return <Main username={loggedInUser} onLogout={handleLogout} />;
 
   return (
     <div>

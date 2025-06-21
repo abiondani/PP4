@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
     nombre 			VARCHAR(100) NOT NULL,
     apellido 		VARCHAR(100) NOT NULL,
     nro_obra_social	VARCHAR(50),
-    correo			VARCHAR(100)
+    correo			VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS especialidades (
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS medicos (
     id_externo 		VARCHAR(100) UNIQUE,
     nombre 			VARCHAR(100) NOT NULL,
     apellido 		VARCHAR(100) NOT NULL,
-    matricula 		VARCHAR(50) NOT NULL
+    matricula 		VARCHAR(50) NOT NULL  
 );
 
 CREATE TABLE IF NOT EXISTS medicos_especialidades (
