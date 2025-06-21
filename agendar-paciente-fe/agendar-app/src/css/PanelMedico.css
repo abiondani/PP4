@@ -1,0 +1,85 @@
+.pantalla {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.lista-turnos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.turno-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.turno-item:hover {
+  background-color: #f9f9f9;
+}
+
+.estado {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+  text-transform: capitalize;
+}
+
+.estado.libre {
+  background-color: #eee;
+  color: #555;
+}
+
+.estado.atendido {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado.ausente {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.botones-turno button {
+  margin-left: 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.botones-turno button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.botones-turno button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.botones-turno button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.turno-actual {
+  background-color: #fff3cd !important; 
+  border-left: 5px solid #ffc107;       
+}

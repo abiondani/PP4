@@ -1,5 +1,6 @@
 const {
   obtenerPacientePorId,
+  obtenerPacientePorIdExterno,
   obtenerTodosLosPacientes,
   crearPaciente,
   eliminarPacientePorIdExterno,
@@ -9,6 +10,18 @@ const {
 async function getPaciente(req, res) {
   try {
     const paciente = await obtenerPacientePorId(req.params.id);
+    if (!paciente) {
+      return res.status(404).json({ mensaje: "Paciente no encontrado" });
+    }
+    res.json(paciente);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener paciente" });
+  }
+}
+
+async function getPacientePorIdExterno(req, res) {
+  try {
+    const paciente = await obtenerPacientePorIdExterno(req.params.id);
     if (!paciente) {
       return res.status(404).json({ mensaje: "Paciente no encontrado" });
     }
@@ -70,6 +83,7 @@ async function putPaciente(req, res) {
 
 module.exports = {
   getPaciente,
+  getPacientePorIdExterno,
   getAllPacientes,
   postPaciente,
   deletePaciente,

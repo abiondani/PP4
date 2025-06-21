@@ -5,6 +5,7 @@ const {
   postPaciente,
   deletePaciente,
   putPaciente,
+  getPacientePorIdExterno,
 } = require("../controladores/pacienteControlador.js");
 
 const pacientesRouter = express.Router();
@@ -14,5 +15,6 @@ pacientesRouter.get("/", getAllPacientes);
 pacientesRouter.post("/", postPaciente);
 pacientesRouter.delete("/:id_externo", deletePaciente);
 pacientesRouter.put("/:id_externo", putPaciente);
+pacientesRouter.get("/externo/:id", getPacientePorIdExterno);
 
 module.exports = pacientesRouter;

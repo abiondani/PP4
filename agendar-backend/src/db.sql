@@ -198,7 +198,10 @@ SELECT 'R', 'Reservado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id 
 UNION ALL
 SELECT 'A', 'Atendido' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'A')
 UNION ALL
-SELECT 'B', 'Bloqueado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'B');
+SELECT 'B', 'Bloqueado' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'B')
+UNION ALL
+SELECT 'U', 'Ausente' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 'U');
+
 
 INSERT INTO medicos (id_externo, nombre, apellido, matricula)
 SELECT 'pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula'

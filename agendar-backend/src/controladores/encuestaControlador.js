@@ -6,10 +6,10 @@ const {
   obtenerPreguntasEncuesta,
 } = require("../modelos/encuestaModelo");
 
-async function crearTokenEncuesta(req, res) {
+async function crearTokenEncuesta() {
   const token = uuidv4();
   await generarTokenEncuesta(token);
-  res.json({ token });
+  return token;
 }
 
 async function validarTokenEncuesta(req, res) {

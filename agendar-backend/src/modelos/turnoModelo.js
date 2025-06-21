@@ -10,6 +10,30 @@ async function obtenerTurnosDisponiblesPorMedico(medico_id) {
   return filas;
 }
 
+const obtenerTurnosDelDiaPorIdMedico = async (medico_id) => {
+  const pool = getPool();
+  const [rows] = await pool.query(
+    `SELECT 
+      t.turno_id,
+      t.fecha,
+      t.duracion,
+      t.estado_id,
+      e.descripcion AS estado,
+      p.nombre AS paciente_nombre,
+      TIME(t.fecha) AS hora
+    FROM turnos t
+    JOIN pacientes p ON t.paciente_id = p.paciente_id
+    JOIN estados e ON t.estado_id = e.estado_id
+    WHERE DATE(t.fecha) = CURDATE()
+      AND t.medico_id = ?
+      AND t.estado_id = 'R'
+      AND NOW() < ADDTIME(t.fecha, SEC_TO_TIME(t.duracion * 60))
+    ORDER BY t.fecha`,
+    [medico_id]
+  );
+  return rows;
+};
+
 async function obtenerTurnosPorFecha() {
   const pool = getPool();
   const estado = "R";
@@ -122,6 +146,17 @@ async function liberarTurno(turno_id) {
   }
 }
 
+const actualizarEstadoTurno = async (turno_id, estado_id) => {
+  const pool = getPool();
+  const [result] = await pool.query(
+    `UPDATE turnos 
+     SET estado_id = ?, fecha_estado = NOW()
+     WHERE turno_id = ?`,
+    [estado_id, turno_id]
+  );
+  return result;
+};
+
 async function cancelarTurno(turno_id) {
   const pool = getPool();
   const [resultado] = await pool.query(
@@ -152,10 +187,12 @@ module.exports = {
   obtenerTurnosOcupadosPorPaciente,
   obtenerTurnosDisponiblesPorEspecialidad,
   obtenerTurnosDisponiblesPorEspecialidadYFecha,
+  obtenerTurnosDelDiaPorIdMedico,
   reservarTurno,
   bloquearTurno,
   liberarTurno,
   cancelarTurno,
   obtenerTurnoPorID,
   obtenerTurnosPorFecha,
+  actualizarEstadoTurno,
 };

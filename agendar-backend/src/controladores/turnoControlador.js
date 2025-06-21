@@ -3,15 +3,21 @@ const {
   obtenerTurnosDisponiblesPorEspecialidad,
   obtenerTurnosDisponiblesPorEspecialidadYFecha,
   obtenerTurnosOcupadosPorPaciente,
+  obtenerTurnosDelDiaPorIdMedico,
   reservarTurno,
   bloquearTurno,
   liberarTurno,
   cancelarTurno,
+  actualizarEstadoTurno,
 } = require("../modelos/turnoModelo.js");
 const {
   enviarCancelacion,
   enviarConfirmacion,
+  enviarEncuesta,
 } = require("../controladores/emailControlador.js");
+const {
+  crearTokenEncuesta,
+} = require("../controladores/encuestaControlador.js");
 
 async function getTurnosPorMedico(req, res) {
   try {
@@ -130,13 +136,47 @@ async function putCancelarTurno(req, res) {
   }
 }
 
+const getTurnosDeHoy = async (req, res) => {
+  const medico_id = req.params.medico_id;
+  try {
+    const turnos = await obtenerTurnosDelDiaPorIdMedico(medico_id);
+    res.json(turnos);
+  } catch (error) {
+    console.error("Error al obtener turnos:", error.message);
+    res.status(500).json({ error: "Error al obtener turnos" });
+  }
+};
+
+const cambiarEstado = async (req, res) => {
+  const turno_id = req.params.turno_id;
+  const { estado_id } = req.body;
+
+  if (!["A", "U"].includes(estado_id)) {
+    return res.status(400).json({ error: "Estado inválido" });
+  }
+
+  try {
+    await actualizarEstadoTurno(turno_id, estado_id);
+    if (estado_id === "A") {
+      const token = await crearTokenEncuesta();
+      enviarEncuesta(turno_id, token);
+    }
+    res.json({ message: "Estado actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar estado:", error.message);
+    res.status(500).json({ error: "Error al actualizar el estado" });
+  }
+};
+
 module.exports = {
   getTurnosPorMedico,
   getTurnosOcupadosPorPaciente,
   getTurnosPorEspecialidad,
   getTurnosPorEspecialidadYFecha,
+  getTurnosDeHoy,
   putReservarTurno,
   putBloquearTurno,
   putLiberarTurno,
   putCancelarTurno,
+  cambiarEstado,
 };
