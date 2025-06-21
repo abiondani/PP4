@@ -26,6 +26,19 @@ function PaginaPrincipal() {
     }
   };
 
+  const generarLink = async () => {
+    await fetch("http://localhost:3000/api/encuestas/generar", {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(`http://localhost:3001/encuesta/${data.token}`);
+      })
+      .catch((err) => {
+        console.error("Error al obtener disponibles:", err);
+      });
+  };
+
   return (
     <div className="layout-container">
       <header className="navbar">
@@ -62,6 +75,9 @@ function PaginaPrincipal() {
             onClick={() => setComponenteActivo("notificar")}
           >
             Envío de Notificaciones
+          </button>
+          <button className="menu-boton" onClick={generarLink}>
+            Generar link encuesta
           </button>
         </aside>
         <main className="content">{renderContenido()}</main>

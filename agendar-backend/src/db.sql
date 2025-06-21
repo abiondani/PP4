@@ -70,6 +70,29 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS token_encuestas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(100) UNIQUE,
+  usado BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS respuestas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(100),
+  respuesta1 INT,
+  respuesta2 INT,
+  respuesta3 INT,
+  respuesta4 INT,
+  respuesta5 INT,
+  respuesta6 INT,
+  fecha_respuesta DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS preguntas_encuesta (
+    pregunta_id INT AUTO_INCREMENT PRIMARY KEY,
+    pregunta VARCHAR(250)
+);
+
 CREATE PROCEDURE IF NOT EXISTS generar_turnos(
     IN anio INT,
     IN mes INT,
@@ -208,6 +231,45 @@ SELECT * FROM (
 WHERE NOT EXISTS (
     SELECT 1 FROM usuarios WHERE usuario = 'admin'
 ) LIMIT 1;
+
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT 'En general, ¿qué tan satisfecho está con la atención recibida en nuestra clínica?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = 'En general, ¿qué tan satisfecho está con la atención recibida en nuestra clínica?'
+);
+
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT '¿Qué tan satisfecho está con la amabilidad y profesionalismo del personal?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = '¿Qué tan satisfecho está con la amabilidad y profesionalismo del personal?'
+);
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT '¿Qué tan satisfecho está con el tiempo de espera para ser atendido?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = '¿Qué tan satisfecho está con el tiempo de espera para ser atendido?'
+);
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT '¿Qué tan satisfecho está con la explicación de su diagnóstico y tratamiento?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = '¿Qué tan satisfecho está con la explicación de su diagnóstico y tratamiento?'
+);
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT '¿Qué tan satisfecho está con la limpieza y comodidad de las instalaciones?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = '¿Qué tan satisfecho está con la limpieza y comodidad de las instalaciones?'
+);
+INSERT INTO preguntas_encuesta (pregunta)
+SELECT '¿Qué tan satisfecho está con la comunicación con su médico/a?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM preguntas_encuesta
+    WHERE pregunta = '¿Qué tan satisfecho está con la comunicación con su médico/a?'
+);
+
 
 /* CALL generar_turnos(2025,5,1,'Miercoles,Jueves,Sábado', 70000, 100000, 30, 1);
 */

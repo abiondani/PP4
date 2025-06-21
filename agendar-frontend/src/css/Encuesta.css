@@ -1,0 +1,34 @@
+.estrellas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.estrellas-linea {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.estrella {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.estrella.activa {
+  color: gold;
+}
+
+.leyendas {
+  display: flex;
+  justify-content: space-between;
+  width: 400px;
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 5px;
+}
