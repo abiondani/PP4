@@ -10,6 +10,17 @@ async function obtenerTurnosDisponiblesPorMedico(medico_id) {
   return filas;
 }
 
+async function obtenerTurnosPorFecha() {
+  const pool = getPool();
+  const estado = "R";
+  const [filas] = await pool.query(
+    `SELECT turno_id, paciente_id FROM turnos    
+     WHERE DATE(fecha) = DATE(now())+3 AND estado_id = ?`,
+    [estado]
+  );
+  return filas;
+}
+
 async function obtenerTurnosOcupadosPorPaciente(paciente_id) {
   const pool = getPool();
   const [filas] = await pool.query(
@@ -146,4 +157,5 @@ module.exports = {
   liberarTurno,
   cancelarTurno,
   obtenerTurnoPorID,
+  obtenerTurnosPorFecha,
 };
