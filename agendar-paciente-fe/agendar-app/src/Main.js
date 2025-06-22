@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function Main({ user, onLogout }) {
   const apiEspecialidades = process.env.REACT_APP_API_ESPECIALIDADES;
@@ -138,7 +138,7 @@ function Main({ user, onLogout }) {
   const cancelarTurno = async (id) => {
     const datos = {
       turno_id: id,
-      paciente_id: usuario.paciente_id,
+      paciente_id: PACIENTE_ID,
     };
     await fetch(apiCancelarTurno, {
       method: "PUT",
@@ -230,7 +230,7 @@ function Main({ user, onLogout }) {
   const confirmarReserva = async () => {
     const datos = {
       turno_id: turnoAConfirmar.turno_id,
-      paciente_id: usuario.paciente_id,
+      paciente_id: PACIENTE_ID,
     };
     await reservarTurno(datos);
 
@@ -324,7 +324,7 @@ function Main({ user, onLogout }) {
   };
 
   /* --------------------------------------------------Visual----------------------------------------------------------- */
-  if (!usuario) {
+  if (!PACIENTE_ID) {
     return <div>Cargando usuario...</div>;
   }
   return (
@@ -425,7 +425,7 @@ function Main({ user, onLogout }) {
         <main style={{ flexGrow: 1, padding: 20 }}>
           {vista === null && (
             <div>
-              <h2>Bienvenido, {userName}!</h2>
+              <h2>Bienvenido, {PACIENTE_NOMBRE}!</h2>
               <p>Seleccione una opción del menú para comenzar.</p>
             </div>
           )}

@@ -25,7 +25,10 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+    console.log(form.username);
+    console.log(form.password);
+    console.log(form.role);
+    console.log(`${process.env.REACT_APP_API_URL}/token`);
     try {
       const tokenResponse = await axios.post(
         `${process.env.REACT_APP_API_URL}/token`,
@@ -41,6 +44,7 @@ function LoginForm() {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toUpperCase();
+
       const loginResponse = await axios.post(
         `${process.env.REACT_APP_API_URL}/login`,
         {
@@ -90,14 +94,14 @@ function LoginForm() {
 
   const handleLogout = () => {
     setLoggedInUser(null);
-    setForm({ username: "", password: "" });
+    setForm({ username: "", password: "", role: "Paciente" });
   };
 
   if (loggedInUser) {
-    if (loggedInUserRol === "3")
-      return <Main id_externo={loggedInUser} onLogout={handleLogout} />;
-    if (loggedInUserRol === "1")
-      return <PanelMedico id_externo={loggedInUser} />;
+    if (loggedInUser.role === usuarioRol.PACIENTE)
+      return <Main user={loggedInUser} onLogout={handleLogout} />;
+    if (loggedInUser.role === usuarioRol.MEDICO)
+      return <PanelMedico user={loggedInUser} onLogout={handleLogout} />;
   }
 
   return (
