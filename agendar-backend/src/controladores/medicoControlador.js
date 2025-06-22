@@ -1,5 +1,6 @@
 const {
     obtenerMedicoPorId,
+    obtenerMedicoPorIdExterno,
     crearMedico,
     actualizarMedicoPorIdExterno,
     eliminarMedicoPorIdExterno,
@@ -14,6 +15,20 @@ async function getMedico(req, res) {
         res.json(medico);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener médico" });
+    }
+}
+
+async function getMedicoPorIdExterno(req, res) {
+    try {
+        const medico = await obtenerMedicoPorIdExterno(req.params.id);
+        if (!medico) {
+            return res.status(404).json({ mensaje: "Médico no encontrado" });
+        }
+        res.json(medico);
+    } catch (error) {
+        res.status(500).json({
+            error: "Error al obtener médico por id externo",
+        });
     }
 }
 
@@ -56,6 +71,7 @@ async function putMedico(req, res) {
 
 module.exports = {
     getMedico,
+    getMedicoPorIdExterno,
     postMedico,
     deleteMedico,
     putMedico,

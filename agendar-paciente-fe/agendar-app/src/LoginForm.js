@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Main from "./Main"; // antes era Welcome
+import Main from "./Main";
 
 function LoginForm() {
+    const usuarioRol = Object.freeze({
+        MEDICO: "MEDICO",
+        PACIENTE: "PACIENTE",
+        ADMINISTRATIVO: "ADMINISTRATIVO",
+    });
     const [form, setForm] = useState({
         username: "",
         password: "",
@@ -21,7 +26,6 @@ function LoginForm() {
         setError("");
 
         try {
-            // Paso 1: Obtener token
             const tokenResponse = await axios.post(
                 `${process.env.REACT_APP_API_URL}/token`,
                 {
@@ -32,10 +36,17 @@ function LoginForm() {
 
             const token = tokenResponse.data.token;
 
-            // Paso 2: Login con token + credenciales de usuario
+            const rol = form.role
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toUpperCase();
             const loginResponse = await axios.post(
                 `${process.env.REACT_APP_API_URL}/login`,
-                { username: form.username, password: form.password },
+                {
+                    username: form.username,
+                    password: form.password,
+                    role: rol,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -43,9 +54,35 @@ function LoginForm() {
                 }
             );
 
+            console.log(
+                "Login:" +
+                    loginResponse.data.username +
+                    " " +
+                    loginResponse.data.role +
+                    " " +
+                    loginResponse.data.id
+            );
+
+            let api = "";
+
+            if (rol === usuarioRol.PACIENTE) {
+                console.log("Soy un paciente");
+                api = process.env.REACT_APP_API_PACIENTE_POR_ID_EXTERNO;
+            } else if (rol === usuarioRol.MEDICO) {
+                console.log("Soy un médico");
+                api = process.env.REACT_APP_API_MEDICO_POR_ID_EXTERNO;
+            }
+            console.log(`${api}/${loginResponse.data.id}`);
+            const userResponse = await axios.get(
+                `${api}/${loginResponse.data.id}`
+            );
+
             setLoggedInUser({
                 username: loginResponse.data.username,
-                role: form.role,
+                role: loginResponse.data.role,
+                id_externo: loginResponse.data.id,
+                id: userResponse.data.id,
+                nombre: userResponse.data.nombre,
             });
         } catch (err) {
             setError("Login fallido. Verifique las credenciales.");

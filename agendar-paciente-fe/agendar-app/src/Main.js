@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Main({ username, onLogout }) {
+function Main({ user, onLogout }) {
     const apiEspecialidades = process.env.REACT_APP_API_ESPECIALIDADES;
     const apiDisponibles = process.env.REACT_APP_API_DISPONIBLES_ESPECIALIDAD;
     const apiBloqueadoTurno = process.env.REACT_APP_API_BLOQUEARTURNO;
@@ -8,8 +8,6 @@ function Main({ username, onLogout }) {
     const apiReservarTurno = process.env.REACT_APP_API_RESERVAR_TURNO;
     const apiOcupadosPaciente = process.env.REACT_APP_API_OCUPADOS_PACIENTE;
     const apiCancelarTurno = process.env.REACT_APP_API_CANCELAR_TURNO;
-    const PACIENTE_ID = 1;
-    const PACIENTE_NOMBRE = username;
 
     const [especialidades, setEspecialidades] = useState([]);
     const [especialidadSeleccionada, setEspecialidadSeleccionada] =
@@ -46,6 +44,10 @@ function Main({ username, onLogout }) {
 
     const [vista, setVista] = useState(null); // null = bienvenida, "reserva" o "ocupados"
 
+    console.log("Usuario: " + user.id + " " + user.nombre);
+    const PACIENTE_ID = user.id;
+    const PACIENTE_NOMBRE = user.nombre;
+
     const headerIconUrl = process.env.REACT_APP_ICONO_URL || "";
     const headerTitle = process.env.REACT_APP_TITULO || "Turnos Médicos";
     const userName = PACIENTE_NOMBRE;
@@ -59,6 +61,7 @@ function Main({ username, onLogout }) {
     };
 
     /* ------------------------------------------------- Funciones ABM ----------------------------------------- */
+
     const recuperarTurnos = async (especialidad_id, fecha) => {
         const datos = { especialidad_id: especialidad_id, fecha: fecha };
 
@@ -221,7 +224,6 @@ function Main({ username, onLogout }) {
     const cargarTurnosParaModificacion = async (id, fecha) => {
         setModificandoTurno(true);
         const turnos = await recuperarTurnos(id, fecha);
-        console.log(turnos);
         setTurnosNuevosParaModificacion(turnos);
     };
 
