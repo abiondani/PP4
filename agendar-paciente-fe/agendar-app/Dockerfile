@@ -7,7 +7,6 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x node_modules/.bin/react-scripts
 
 RUN npm run build
 
