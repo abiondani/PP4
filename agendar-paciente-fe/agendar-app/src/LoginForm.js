@@ -5,9 +5,17 @@ import Main from "./Main";
 import PanelMedico from "./PanelMedico";
 
 function LoginForm() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const usuarioRol = Object.freeze({
+    MEDICO: "MEDICO",
+    PACIENTE: "PACIENTE",
+    ADMINISTRATIVO: "ADMINISTRATIVO",
+  });
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+    role: "Paciente",
+  });
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [loggedInUserRol, setLoggedInUserRol] = useState(null);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -29,9 +37,17 @@ function LoginForm() {
 
       const token = tokenResponse.data.token;
 
+      const rol = form.role
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase();
       const loginResponse = await axios.post(
         `${process.env.REACT_APP_API_URL}/login`,
-        { ...form },
+        {
+          username: form.username,
+          password: form.password,
+          role: rol,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -39,8 +55,34 @@ function LoginForm() {
         }
       );
 
-      setLoggedInUser(loginResponse.data.id);
-      setLoggedInUserRol(loginResponse.data.rol_id);
+      console.log(
+        "Login:" +
+          loginResponse.data.username +
+          " " +
+          loginResponse.data.role +
+          " " +
+          loginResponse.data.id
+      );
+
+      let api = "";
+
+      if (rol === usuarioRol.PACIENTE) {
+        console.log("Soy un paciente");
+        api = process.env.REACT_APP_API_PACIENTE_POR_ID_EXTERNO;
+      } else if (rol === usuarioRol.MEDICO) {
+        console.log("Soy un médico");
+        api = process.env.REACT_APP_API_MEDICO_POR_ID_EXTERNO;
+      }
+      console.log(`${api}/${loginResponse.data.id}`);
+      const userResponse = await axios.get(`${api}/${loginResponse.data.id}`);
+
+      setLoggedInUser({
+        username: loginResponse.data.username,
+        role: loginResponse.data.role,
+        id_externo: loginResponse.data.id,
+        id: userResponse.data.id,
+        nombre: userResponse.data.nombre,
+      });
     } catch (err) {
       setError("Login fallido. Verifique las credenciales.");
     }

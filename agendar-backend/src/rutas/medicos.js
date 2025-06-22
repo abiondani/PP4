@@ -10,6 +10,7 @@ const {
 const medicosRouter = express.Router();
 
 medicosRouter.get("/:id", getMedico);
+medicosRouter.get("/externo/:id", getMedicoPorIdExterno);
 medicosRouter.post("/", postMedico);
 medicosRouter.delete("/:id", deleteMedico);
 medicosRouter.put("/:id", putMedico);

@@ -22,29 +22,29 @@ exports.getToken = (req, res) => {
 
 exports.login = (req, res) => {
   const authHeader = req.headers.authorization;
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
   if (!authHeader) return res.status(401).json({ error: "Falta token" });
 
   const token = authHeader.split(" ")[1];
 
   try {
-    console.log("entrada:" + token);
-    console.log("back:" + process.env.TOKEN_SECRET);
     jwt.verify(token, process.env.TOKEN_SECRET);
   } catch (err) {
     return res.status(403).json({ error: "Token inválido o expirado" });
   }
 
   const user = users.find(
-    (u) => u.username === username && u.password === password
+    (u) => u.username === username && u.password === password && u.role === role
   );
 
   if (user) {
-    const id = user.id;
-    const rol_id = user.rol_id;
-
-    return res.json({ message: "Login exitoso", id, rol_id });
+    return res.json({
+      message: "Login exitoso",
+      username: user.username,
+      role: user.role,
+      id: user.id,
+    });
   } else {
     return res.status(401).json({ error: "Usuario o contraseña inválidos" });
   }

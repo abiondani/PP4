@@ -21,13 +21,18 @@ async function getPaciente(req, res) {
 
 async function getPacientePorIdExterno(req, res) {
   try {
+    console.log("Llegue al controlador: " + req.params.id);
     const paciente = await obtenerPacientePorIdExterno(req.params.id);
     if (!paciente) {
-      return res.status(404).json({ mensaje: "Paciente no encontrado" });
+      return res
+        .status(404)
+        .json({ mensaje: "Paciente no encontrado por id externo" });
     }
     res.json(paciente);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener paciente" });
+    res.status(500).json({
+      error: "Error al obtener paciente por id externo",
+    });
   }
 }
 

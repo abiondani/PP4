@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function Main({ id_externo, onLogout }) {
+function Main({ user, onLogout }) {
   const apiEspecialidades = process.env.REACT_APP_API_ESPECIALIDADES;
   const apiDisponibles = process.env.REACT_APP_API_DISPONIBLES_ESPECIALIDAD;
   const apiBloqueadoTurno = process.env.REACT_APP_API_BLOQUEARTURNO;
@@ -9,7 +9,6 @@ function Main({ id_externo, onLogout }) {
   const apiOcupadosPaciente = process.env.REACT_APP_API_OCUPADOS_PACIENTE;
   const apiCancelarTurno = process.env.REACT_APP_API_CANCELAR_TURNO;
 
-  const [usuario, setUsuario] = useState(null);
   const [especialidades, setEspecialidades] = useState([]);
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState("");
   const [disponibles, setDisponibles] = useState([]);
@@ -44,35 +43,20 @@ function Main({ id_externo, onLogout }) {
 
   const [vista, setVista] = useState(null); // null = bienvenida, "reserva" o "ocupados"
 
+  console.log("Usuario: " + user.id + " " + user.nombre);
+  const PACIENTE_ID = user.id;
+  const PACIENTE_NOMBRE = user.nombre;
+
   const headerIconUrl = process.env.REACT_APP_ICONO_URL || "";
   const headerTitle = process.env.REACT_APP_TITULO || "Turnos Médicos";
 
-  useEffect(() => {
-    const obtenerUsuario = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/pacientes/externo/${id_externo}`
-        );
-        if (!response.ok) {
-          throw new Error("Error al obtener los datos del usuario");
-        }
-        const data = await response.json();
-        setUsuario(data);
-      } catch (error) {
-        console.error("Error al recuperar usuario:", error);
-      }
-    };
-
-    if (id_externo) {
-      obtenerUsuario();
-    }
-  }, [id_externo]);
   /* ------------------------- Funciones para manejar el menú ---------------------------------------- */
 
   const mostrarReserva = () => setVista("reserva");
   const mostrarOcupados = () => setVista("ocupados");
 
   /* ------------------------------------------------- Funciones ABM ----------------------------------------- */
+
   const recuperarTurnos = async (especialidad_id, fecha) => {
     const datos = { especialidad_id: especialidad_id, fecha: fecha };
 
@@ -235,7 +219,6 @@ function Main({ id_externo, onLogout }) {
   const cargarTurnosParaModificacion = async (id, fecha) => {
     setModificandoTurno(true);
     const turnos = await recuperarTurnos(id, fecha);
-    console.log(turnos);
     setTurnosNuevosParaModificacion(turnos);
   };
 
@@ -297,7 +280,7 @@ function Main({ id_externo, onLogout }) {
 
     const datos = {
       turno_id: turnoNuevoAReservar.turno_id,
-      paciente_id: usuario.paciente_id,
+      paciente_id: PACIENTE_ID,
     };
     await reservarTurno(datos);
 
@@ -328,7 +311,7 @@ function Main({ id_externo, onLogout }) {
   /*-------------------------------------------Carga de turnos ocupados--------------------------------------------------------------*/
 
   const cargarTurnosOcupados = () => {
-    fetch(`${apiOcupadosPaciente}/1`)
+    fetch(`${apiOcupadosPaciente}/${PACIENTE_ID}`)
       .then((res) => res.json())
       .then((data) => {
         setOcupados(data);
@@ -442,7 +425,7 @@ function Main({ id_externo, onLogout }) {
         <main style={{ flexGrow: 1, padding: 20 }}>
           {vista === null && (
             <div>
-              <h2>Bienvenido, {usuario.nombre}!</h2>
+              <h2>Bienvenido, {userName}!</h2>
               <p>Seleccione una opción del menú para comenzar.</p>
             </div>
           )}

@@ -9,11 +9,11 @@ async function obtenerPacientePorId(id) {
   return filas[0];
 }
 
-async function obtenerPacientePorIdExterno(id) {
+async function obtenerPacientePorIdExterno(id_externo) {
   const pool = getPool();
   const [filas] = await pool.query(
-    "SELECT * FROM pacientes WHERE id_externo = ?",
-    [id]
+    "SELECT paciente_id as id, nombre FROM pacientes WHERE id_externo = ?",
+    [id_externo]
   );
   return filas[0];
 }
@@ -59,9 +59,9 @@ async function actualizarPacientePorIdExterno(idExterno, datos) {
 
 module.exports = {
   obtenerPacientePorId,
-  obtenerPacientePorIdExterno,
   obtenerTodosLosPacientes,
   crearPaciente,
   eliminarPacientePorIdExterno,
   actualizarPacientePorIdExterno,
+  obtenerPacientePorIdExterno,
 };

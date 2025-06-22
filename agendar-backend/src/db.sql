@@ -204,15 +204,27 @@ SELECT 'U', 'Ausente' WHERE NOT EXISTS (SELECT 1 FROM estados WHERE estado_id = 
 
 
 INSERT INTO medicos (id_externo, nombre, apellido, matricula)
-SELECT 'pruebaIdExterno', 'pruebaNombre', 'pruebaApellido', 'pruebaMatricula'
+SELECT '100000003', 'Juan Pablo', 'Sparo', '2389238923'
 WHERE NOT EXISTS (
-    SELECT 1 FROM medicos WHERE id_externo = 'pruebaIdExterno'
+    SELECT 1 FROM medicos WHERE id_externo = '100000003'
 );
 
-INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social)
-SELECT 'pruebaIdExternoPaciente', 'pruebaNombrePaciente', 'pruebaApellidoPaciente', '6025552255'
+INSERT INTO medicos (id_externo, nombre, apellido, matricula)
+SELECT '100000004', 'Sebastian', 'Longhitano', '49348348'
 WHERE NOT EXISTS (
-    SELECT 1 FROM pacientes WHERE id_externo = 'pruebaIdExternoPaciente'
+    SELECT 1 FROM medicos WHERE id_externo = '100000004'
+);
+
+INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social, correo)
+SELECT '100000001', 'Alejandro', 'Biondani', '6025552255', 'abiondani@gmail.com'
+WHERE NOT EXISTS (
+    SELECT 1 FROM pacientes WHERE id_externo = '100000001'
+);
+
+INSERT INTO pacientes (id_externo, nombre, apellido, nro_obra_social, correo)
+SELECT '100000002', 'Luciano', 'Lopez', '2342354325', 'lucianolop88@gmail.com'
+WHERE NOT EXISTS (
+    SELECT 1 FROM pacientes WHERE id_externo = '100000002'
 );
 
 INSERT INTO medicos_especialidades (medico_id, especialidad_id)
@@ -274,5 +286,5 @@ WHERE NOT EXISTS (
 );
 
 
-/* CALL generar_turnos(2025,5,1,'Miercoles,Jueves,Sábado', 70000, 100000, 30, 1);
+/*  CALL generar_turnos(2025,5,1,'Miercoles,Jueves,Sábado', 70000, 100000, 30, 1);
 */
