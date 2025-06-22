@@ -9,7 +9,7 @@ const Notificar = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/api/notificaciones", {
+      const response = await fetch(process.env.REACT_APP_API_NOTIFICACIONES, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
