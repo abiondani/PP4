@@ -29,4 +29,4 @@ RUN npm run build
 RUN npm install -g serve
 CMD ["serve", "-s", "build"]
 
-EXPOSE 3001
+EXPOSE 3002
