@@ -3,14 +3,12 @@ const { verificarCredenciales } = require("../modelos/loginModelo.js");
 async function loginUsuario(req, res) {
     try {
         const { usuario, contrasena } = req.body;
-        console.log("Datos recibidos en login:", { usuario, contrasena });
 
         if (!usuario || !contrasena) {
             return res.status(400).json({ mensaje: "Faltan credenciales" });
         }
 
         const datosUsuario = await verificarCredenciales(usuario, contrasena);
-        console.log("Resultado verificarCredenciales:", datosUsuario);
 
         if (!datosUsuario) {
             return res
