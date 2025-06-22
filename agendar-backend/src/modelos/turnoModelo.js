@@ -20,6 +20,7 @@ const obtenerTurnosDelDiaPorIdMedico = async (medico_id) => {
       t.estado_id,
       e.descripcion AS estado,
       p.nombre AS paciente_nombre,
+      p.id_externo AS id_externo_paciente,
       TIME(t.fecha) AS hora
     FROM turnos t
     JOIN pacientes p ON t.paciente_id = p.paciente_id

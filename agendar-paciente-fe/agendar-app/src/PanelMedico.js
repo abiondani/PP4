@@ -4,6 +4,7 @@ import "./css/PanelMedico.css";
 const PanelMedico = ({ id_externo }) => {
   const [turnos, setTurnos] = useState([]);
   const [usuario, setUsuario] = useState(null);
+  const [historiasClinicas, setHistoriasClinicas] = useState({});
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -27,7 +28,7 @@ const PanelMedico = ({ id_externo }) => {
     };
 
     obtenerDatos();
-  }, []);
+  }, [id_externo]);
 
   const cambiarEstado = async (turnoId, nuevoEstadoId) => {
     try {
@@ -57,6 +58,37 @@ const PanelMedico = ({ id_externo }) => {
       console.error("Error al cambiar estado:", err.message);
     }
   };
+  const verHistoriaClinica = async (id_externo_paciente, turnoId) => {
+    if (historiasClinicas.hasOwnProperty(turnoId)) {
+      setHistoriasClinicas((prev) => {
+        const nuevo = { ...prev };
+        delete nuevo[turnoId];
+        return nuevo;
+      });
+      return;
+    }
+    try {
+      const res = await fetch("http://localhost:4000/historia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_externo: id_externo_paciente }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setHistoriasClinicas((prev) => ({
+        ...prev,
+        [turnoId]: data.historia,
+      }));
+    } catch (error) {
+      setHistoriasClinicas((prev) => ({
+        ...prev,
+        [turnoId]: null,
+      }));
+      console.error("Error al obtener historia clínica:", error.message);
+    }
+  };
 
   if (!usuario) {
     return <div>Cargando usuario...</div>;
@@ -64,6 +96,7 @@ const PanelMedico = ({ id_externo }) => {
   return (
     <div className="pantalla">
       <h2>Turnos del Día</h2>
+
       <ul className="lista-turnos">
         {turnos.length === 0 ? (
           <p>No hay turnos para hoy.</p>
@@ -86,20 +119,48 @@ const PanelMedico = ({ id_externo }) => {
                     {turno.estado}
                   </span>
                 </div>
+
                 <div className="botones-turno">
                   <button
+                    className="boton-atendido"
                     onClick={() => cambiarEstado(turno.turno_id, "A")}
                     disabled={turno.estado_id !== "R"}
                   >
                     Atendido
                   </button>
                   <button
+                    className="boton-ausente"
                     onClick={() => cambiarEstado(turno.turno_id, "U")}
                     disabled={turno.estado_id !== "R"}
                   >
                     Ausente
                   </button>
+                  <button
+                    className="boton-historia"
+                    onClick={() =>
+                      verHistoriaClinica(
+                        turno.id_externo_paciente,
+                        turno.turno_id
+                      )
+                    }
+                  >
+                    Historia Clínica
+                  </button>
                 </div>
+
+                {/* Mostrar historia clínica si ya fue consultada */}
+                {historiasClinicas.hasOwnProperty(turno.turno_id) && (
+                  <div className="historia-clinica">
+                    {historiasClinicas[turno.turno_id] ? (
+                      <>
+                        <strong>Historia Clínica:</strong>
+                        <p>{historiasClinicas[turno.turno_id]}</p>
+                      </>
+                    ) : (
+                      <p>El paciente no posee historia clínica.</p>
+                    )}
+                  </div>
+                )}
               </li>
             );
           })
