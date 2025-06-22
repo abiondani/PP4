@@ -7,6 +7,9 @@ RUN npm install
 
 COPY . .
 
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 RUN chmod +x node_modules/.bin/react-scripts
 
 RUN npm run build
