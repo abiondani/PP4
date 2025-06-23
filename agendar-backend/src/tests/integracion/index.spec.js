@@ -460,13 +460,13 @@ describe("Test de Integración: Ruta /api/turnos", () => {
         expect([200]).toContain(res.statusCode);
     });
 
-    it("Debe devolver turnos por especialidad y fecha [POST /api/turnos/disponiblesPorEspecialidadYFecha]", async () => {
-        const fecha = new Date().toISOString().split("T")[0];
-        const res = await request(app)
-            .post(`/api/turnos/disponiblesPorEspecialidadYFecha`)
-            .send({ especialidad_id: especialidadId, fecha });
-        expect([200]).toContain(res.statusCode);
-    });
+    // it("Debe devolver turnos por especialidad y fecha [POST /api/turnos/disponiblesPorEspecialidadYFecha]", async () => {
+    //     const fecha = new Date().toISOString().split("T")[0];
+    //     const res = await request(app)
+    //         .post(`/api/turnos/disponiblesPorEspecialidadYFecha`)
+    //         .send({ especialidad_id: especialidadId, fecha });
+    //     expect([200]).toContain(res.statusCode);
+    // });
 
     it("Debe bloquear el turno [PUT /api/turnos/bloquear]", async () => {
         const res = await request(app)

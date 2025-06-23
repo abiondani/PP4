@@ -30,10 +30,10 @@ app.use("/api/notificaciones", emailRouter);
 app.use("/api/encuestas", encuestasRouter);
 app.use("/api/metricas", metricasRouter);
 
-crearBaseDeDatosSiNoExiste();
 module.exports = app;
 
 if (process.env.NODE_ENV !== "test") {
+    crearBaseDeDatosSiNoExiste();
     app.listen(puerto, () => {
         console.log(`Servidor escuchando en ${host}:${puerto}`);
     });
