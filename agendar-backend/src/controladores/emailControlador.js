@@ -42,7 +42,7 @@ const enviarNotificacionMasiva = async (req, res) => {
 const enviarEncuesta = async (turno_id, token) => {
   const turno = await obtenerTurnoPorID(turno_id);
   const paciente = await obtenerPacientePorId(turno.paciente_id);
-  const link = `http://localhost:3002/encuesta/${token}`;
+  const link = `${process.env.API_ENCUESTA}/${token}`;
   const mensaje = `<h2>Hola ${paciente.nombre}!</h2>
                   <p>Esperamos que te encuentres bien.</p>
                   <p>En ${process.env.CLINICA_NOMBRE} valoramos mucho tu opinion. Queremos asegurarnos que tu experiencia con nosotros sea siempre la mejor posible. Por eso te invitamos a participar en una breve encuesta de satisfaccion sobre tu reciente visita.<p>

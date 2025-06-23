@@ -13,14 +13,14 @@ const Encuesta = () => {
     const cargarDatos = async () => {
       try {
         const validacionRes = await fetch(
-          `http://localhost:3000/api/encuestas/validar/${token}`
+          `${process.env.REACT_APP_API_VALIDAR_ENCUESTA}/${token}`
         );
         if (!validacionRes.ok) throw new Error("Token inválido o ya usado");
 
         setValido(true);
 
         const preguntasRes = await fetch(
-          "http://localhost:3000/api/encuestas/preguntas"
+          process.env.REACT_APP_API_PREGUNTAS_ENCUESTA
         );
         if (!preguntasRes.ok)
           throw new Error("No se pudieron obtener las preguntas");
@@ -48,7 +48,7 @@ const Encuesta = () => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://localhost:3000/api/encuestas/responder/${token}`,
+        `${process.env.REACT_APP_API_RESPONDER_ENCUESTA}/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
