@@ -11,7 +11,9 @@ const loginRouter = require("./rutas/login.js");
 const emailRouter = require("./rutas/email");
 const encuestasRouter = require("./rutas/encuestas.js");
 const metricasRouter = require("./rutas/metricas.js");
-require("./cron/recordatorios.js");
+if (process.env.NODE_ENV !== "test") {
+    require("./cron/recordatorios.js");
+}
 
 dotenv.config();
 
@@ -34,7 +36,7 @@ crearBaseDeDatosSiNoExiste();
 module.exports = app;
 
 if (process.env.NODE_ENV !== "test") {
-  app.listen(puerto, () => {
-    console.log(`Servidor escuchando en ${host}:${puerto}`);
-  });
+    app.listen(puerto, () => {
+        console.log(`Servidor escuchando en ${host}:${puerto}`);
+    });
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest tests/integracion/index.spec.js"
+    "test": "jest tests/integracion/index.spec.js --detectOpenHandles --forceExit"
   },
   "keywords": [],
   "author": "",
