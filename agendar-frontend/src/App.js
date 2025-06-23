@@ -7,6 +7,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<PaginaPrincipal />} />
+        <Route path="/encuesta/:token" element={<Encuesta />} />
       </Routes>
     </Router>
   );
